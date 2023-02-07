@@ -1,0 +1,206 @@
+<html>
+<head>
+<title>my cool site</title>
+<style>
+#input {
+  border-color: black;
+  background-color: black;
+  font-family: monospace;
+  color: white;
+  border: 0px;
+}
+#input:focus {
+  outline: none;
+  border-color: black;
+  background-color: black;
+  color: white;
+  border: 0px;
+}
+
+body {
+  background-color: black;
+  font-family: monospace;
+  color: white;
+  padding: 20px;
+}
+
+#cursor {
+  border: none;
+  background-color: white;
+  font-size: 12;
+}
+
+#cursor.onHover {
+  border-style: solid;
+  border-width: 1px;
+  border-color: white;
+  font-size: 12;
+}
+
+#terminal
+{
+  margin: auto;
+}
+
+</style>
+</head>
+<body>
+<div id="date"></div>
+<div style="font-size: 0;">
+<span id="terminal" style="font-size: 12;">
+<b><font color="lime">chrisclem@root</font>:~$</b>
+</span>
+<font id="cursor">&nbsp;</font>
+</div>
+
+<div id="debug" style="color: red; position: bottom;">Debug</div>
+
+<!---->
+
+<script>
+/*
+known issues in function besides basic developmental issues rooted in lack of intended development
+(ex. issues such as " 'help' is not a valid command " are not listed as they are not rooted from
+development bugs, rather the code is just not fully developed yet, but issues such as
+" 'cd ..' moves user ahead a folder instead of behind a folder " are valid issues as they are caused
+from buggy code)
+
+- [FIXED] typing "chrisclem" will make it impossible to delete following 
+          text because it thinks that it is a newline
+          IDEA TO FIX THIS !!! IDEA IS whenever enter is pressed it takes
+          the index of the newline and uses that instead of the
+          lastindexof"chrisclem" 11
+  
+- [FIXED] after clearing terminal a ">" key appears to be somewhere?? so no commands work
+      [FIXED] =>  no > anymore after changing how input is handled, however commands still do
+      do not work after clearing the terminal
+      
+- [FIXED] does not read first line properly
+
+- [FIXED] fix all of the above problems and make it overall more efficient if instead of just
+  looking at a substring of html element keep track of typed characters in seperate
+  string
+  
+- user can type out of margins and bounds whops
+
+- cannot delete '<', '>', '&' characters, dont know why (deleted from input string
+  but does not disappear in html visual)
+  
+- Initiating shortcuts such as ctrl a will cause letter such as 'a' to be displayed
+  
+- [FIXED (mostly) ] history function does not work properly i kinda broke it lol trying to make it better
+
+- moving cursor back and forth does not work properly
+*/
+
+var terminal = document.getElementById("terminal");
+var cursor = document.getElementById("cursor");
+var input = "";
+const history = [""];
+var historyIndex = 0;
+
+var debug = document.getElementById("debug");
+
+var currentDirectory = '/';
+var fileStructure = {
+  '/': {
+        'resume': 'data!!! i love data i think it is very possible that i may become addicted to drugs in the future',
+        'funfile': 'yoyo'
+  }
+};
+
+const dateS = new Date();
+var date = document.getElementById("date");
+date.innerHTML = "<font color='grey'>" + dateS + "</font>";
+
+
+var cursorPositionLeft = 0;
+
+document.onkeydown = function(e) {
+  var key = e.key;
+  
+  if(key === "ArrowUp")
+  {
+    if(historyIndex < history.length - 1 && history.length != 0)
+    {
+      historyIndex ++;
+      terminal.innerHTML = terminal.innerHTML.substr(0, terminal.innerHTML.length - input.length) + history[historyIndex];
+      input = history[historyIndex];
+    }
+  }
+  if(key === "ArrowDown")
+  {
+    if(historyIndex > 0)
+    {
+      historyIndex --;
+      terminal.innerHTML = terminal.innerHTML.substr(0, terminal.innerHTML.length - input.length) + history[historyIndex];
+      input = history[historyIndex];
+      
+    }
+  }
+  
+  
+  
+  if(key === "ArrowLeft")
+  {
+    cursorPositionLeft ++;
+    cursor.innerHTML = "";
+    terminal.innerHTML = terminal.innerHTML.substr(0, terminal.innerHTML.length  - cursorPositionLeft) + "<font id='cursor'>&nbsp;</font>" + terminal.innerHTML.substr(terminal.innerHTML.length - cursorPositionLeft + 1);
+    cursor = document.getElementById("cursor");
+  }
+  
+  
+  
+  if(key.length === 1)
+  {
+    terminal.innerHTML += key;
+    input += key;
+    history[historyIndex] += key;
+  }
+  else if(key === "Backspace")
+  {
+    if(input.length > 0)
+    {
+      terminal.innerHTML = terminal.innerHTML.substr(0, terminal.innerHTML.length - 1);
+      input = input.substr(0, input.length - 1);
+      if(historyIndex != -1)
+    {
+      history[historyIndex] = history[historyIndex].substr(0, history[historyIndex].length - 1);
+    }
+    }
+  }
+  else if(key === "Enter")
+  {
+    if(input === "clear")
+    {
+      terminal.innerHTML = "<b><font color='lime'>chrisclem@root</font>:~$</b> ";
+    }
+    else
+    {
+      if(input === "ls")
+    {
+      terminal.innerHTML += '<br><b><font color="blue">File_1\t\t\tFile_2</font></b></b>';
+    }
+    else if(input !== "")
+    {
+      terminal.innerHTML += "<br>Unknown Command: " + input.split(" ")[0];
+    }
+    if(historyIndex > 0)
+    {
+      history[0] = history[historyIndex];
+      // input = history[historyIndex];
+    }
+      terminal.innerHTML += "<br><b><font color='lime'>chrisclem@root</font>:~$</b> ";
+    }
+    if(history[historyIndex] !== "")
+      if(history[0] !== "")
+        history.unshift("");
+    historyIndex = 0;
+    input = "";
+  }
+  
+}
+</script>
+
+</body>
+</html>

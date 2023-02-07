@@ -2,26 +2,15 @@
 <head>
 <title>my cool site</title>
 <style>
-#input {
-  border-color: black;
-  background-color: black;
-  font-family: monospace;
-  color: white;
-  border: 0px;
-}
-#input:focus {
-  outline: none;
-  border-color: black;
-  background-color: black;
-  color: white;
-  border: 0px;
-}
-
 body {
   background-color: black;
   font-family: monospace;
   color: white;
   padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
 #cursor {
@@ -37,22 +26,47 @@ body {
   font-size: 12;
 }
 
+#terminal-wrap {
+  width: 50%;
+  height: 56.25%;
+  background-color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* aligns the text to the top left of the rectangle */
+  align-items: flex-start; /* aligns the text to the top left of the rectangle */
+  padding: 20px; /* adds padding to the top left of the rectangle */
+  overflow: hidden; /* prevents text from spilling out of the rectangle */
+  border: 1px solid white; /* adds an outline to the rectangle */
+}
+
 #terminal
 {
   margin: auto;
+  width: 100%;
+}
+
+#debug
+{
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  color: red;
+  text-align: center;
 }
 
 </style>
 </head>
 <body>
-<div id="date"></div>
-<div style="font-size: 0;">
-<span id="terminal" style="font-size: 12;">
-<b><font color="lime">chrisclem@root</font>:~$</b>
-</span>
-<font id="cursor">&nbsp;</font>
+<div id="terminal-wrap">
+  <div id="date"></div>
+  <div style="font-size: 0;">
+    <span id="terminal" style="font-size: 12;">
+      <b><font color="lime">chrisclem@root</font>:~$</b>
+    </span>
+    <font id="cursor">&nbsp;</font>
+  </div>
 </div>
-
 <div id="debug" style="color: red; position: bottom;">Debug</div>
 
 <!---->

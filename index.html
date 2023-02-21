@@ -202,8 +202,9 @@ document.onkeydown = function(e) {
     }
     else
     {
-      
-      if(input.split(" ")[0] === "cd")
+      if(input.split(" ")[0] === "pwd")
+        terminal.innerHTML += '<br>/' + curDirStr;
+      else if(input.split(" ")[0] === "cd")
       {
         var desiredDir = input.split(" ")[1];
         
@@ -222,7 +223,10 @@ document.onkeydown = function(e) {
       else if(input === "ls")
       {
         terminal.innerHTML += '<br>';
-        Object.keys(currentDirectory).forEach(function func (item) {terminal.innerHTML += '<b><font color="blue">' + item + '\t\t\t</font></b>';});
+        Object.keys(currentDirectory).forEach(
+          function (item) {
+          eval("if(typeof currentDirectory." + item + " === 'object'){terminal.innerHTML += '<b><font color=\"blue\">' + item + ' </font></b>';} else{terminal.innerHTML += item + ' ';}");
+        });
       }
       else if(input !== "")
       {

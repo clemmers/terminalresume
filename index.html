@@ -62,7 +62,7 @@ body {
   <div id="date"></div>
   <div style="font-size: 0;">
     <span id="terminal" style="font-size: 12;">
-      <b><font color="lime">chrisclem</font>:~root $</b>
+      <b><font color="lime">chrisclem</font>:~/root $</b>
     </span>
     <font id="cursor">&nbsp;</font>
   </div>
@@ -107,6 +107,10 @@ from buggy code)
 
 - cd dir works but cd dir/ does not
 
+- user is able to cd into files that are not folders
+
+- make 'cd ..' from '/root' not send user to ' ' or decide that there should not be a '/root' and just a ' '
+
 - ls files and folders both folder font/color
 */
 
@@ -131,8 +135,8 @@ const fileStructure = {
         resume: 'data!!! i love data i think it is very possible that i may become addicted to drugs in the future',
         funfile: 'yoyo'
 };
-let currentDirectory = fileStructure;
-var curDirStr = "root";
+var currentDirectory = fileStructure;
+var curDirStr = "/root";
 
 const dateS = new Date();
 var date = document.getElementById("date");
@@ -198,27 +202,69 @@ document.onkeydown = function(e) {
   {
     if(input === "clear")
     {
-      terminal.innerHTML += "<b><font color='lime'>chrisclem</font>:~" + curDirStr + " $</b> ";
+      terminal.innerHTML = "<b><font color='lime'>chrisclem</font>:~" + curDirStr + " $</b> ";
     }
     else
     {
       if(input.split(" ")[0] === "pwd")
-        terminal.innerHTML += '<br>/' + curDirStr;
+        terminal.innerHTML += '<br>' + curDirStr;
+        
+        
       else if(input.split(" ")[0] === "cd")
       {
-        var desiredDir = input.split(" ")[1];
         
-        if(!input.includes(".") && desiredDir in currentDirectory )
+        
+        
+        // var desiredDir = input.split(" ")[1].split("/").filter(e => e !== ""); // "cd test/test1/test2/" = [ 'test', 'test1', 'test2' ]
+        
+        input.split(" ")[1].split("/").filter(e => e !== "").forEach(cdFunc);
+        
+        
+        /*
+        if(desiredDir === "")
+        {
+          currentDirectory = fileStructure;
+          curDirStr = "/root";
+        }
+        
+        */
+        
+        /*
+        
+        the follwing is to try to solve traversing through multiple directories at once
+        
+        array desiredDirPortion = split at "/"
+        while(some condition)
+        {
+            if(desiredDirPortion in currentDirectory)
+        }
+
+        
+        */
+        
+        
+        
+        /*
+        if(!desiredDir.includes(".") && desiredDir in currentDirectory )
         {
           eval("currentDirectory = currentDirectory." + desiredDir);
           curDirStr += "/" + desiredDir;
         }
-        
+        else if(desiredDir === '..')
+        {
+          curDirStr = curDirStr.substr(0, curDirStr.lastIndexOf("/"));
+          debug.innerHTML = curDirStr.substr(5).replace("/", ".");
+          eval("currentDirectory = fileStructure" + curDirStr.substr(5).replace("/", "."));
+        }
         else
         {
           terminal.innerHTML += '<br>invalid directory bla bla idk yet i just started';
         }
+      
+        */
+        
       }
+      
       
       else if(input === "ls")
       {
@@ -246,6 +292,21 @@ document.onkeydown = function(e) {
     input = "";
   }
   
+}
+
+function cdFunc(e)
+{
+  if(!e.includes(".") && e in currentDirectory )
+        {
+          eval("currentDirectory = currentDirectory." + e);
+          curDirStr += "/" + e;
+        }
+  else if(e === '..')
+        {
+          curDirStr = curDirStr.substr(0, curDirStr.lastIndexOf("/"));
+          debug.innerHTML = curDirStr.substr(5).replace("/", ".");
+          eval("currentDirectory = fileStructure" + curDirStr.substr(5).replace("/", "."));
+        }
 }
 
 </script>

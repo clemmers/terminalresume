@@ -62,7 +62,7 @@ body {
   <div id="date"></div>
   <div style="font-size: 0;">
     <span id="terminal" style="font-size: 12;">
-      <b><font color="lime">chrisclem</font>:~/root $</b>
+      <b><font color="lime">chrisclem</font>:~/chrisclem $</b>
     </span>
     <font id="cursor">&nbsp;</font>
   </div>
@@ -105,13 +105,24 @@ from buggy code)
 
 - moving cursor back and forth does not work properly
 
-- cd dir works but cd dir/ does not
+- [FIXED] cd dir works but cd dir/ does not
 
 - user is able to cd into files that are not folders
 
 - make 'cd ..' from '/root' not send user to ' ' or decide that there should not be a '/root' and just a ' '
 
-- ls files and folders both folder font/color
+- [FIXED] ls files and folders both folder font/color
+
+- [FIXED] 'cd' will cause error because it is trying to split an undefined
+
+- 'cd invalidDirectory' error message will contain '0' instead of 'invalidDirectory' do not know why
+
+- 'ls directory' does not work
+
+- 'chrisclem:~ cd chrisclem/folder1/invalidDirectory' expected to stay in / directory, rather goes into chrisclem/folder1 directory before encountering error
+
+- consider curDirStr to be arr rather than formatted string
+
 */
 
 var terminal = document.getElementById("terminal");
@@ -123,20 +134,22 @@ var historyIndex = 0;
 var debug = document.getElementById("debug");
 
 const fileStructure = {
-        'folder1': {
+    chrisclem : {
+        folder1: {
           coolfile: 'yuhhh',
-          'foldie': {
+          foldie: {
             filebile: 'test'
           }
         },
-        'folder2': {
+        folder2: {
           coolfile: 'yuhhh but different'
         },
         resume: 'data!!! i love data i think it is very possible that i may become addicted to drugs in the future',
         funfile: 'yoyo'
+    }
 };
-var currentDirectory = fileStructure;
-var curDirStr = "/root";
+var currentDirectory = fileStructure.chrisclem;
+var curDirStr = "/chrisclem";
 
 const dateS = new Date();
 var date = document.getElementById("date");
@@ -206,73 +219,86 @@ document.onkeydown = function(e) {
     }
     else
     {
-      if(input.split(" ")[0] === "pwd")
+      var command = input.split(" ")[0];
+      // if(command)
+      
+      if(command === "pwd")
         terminal.innerHTML += '<br>' + curDirStr;
         
         
-      else if(input.split(" ")[0] === "cd")
+      else if(command === "cd")
       {
         
-        
-        
-        // var desiredDir = input.split(" ")[1].split("/").filter(e => e !== ""); // "cd test/test1/test2/" = [ 'test', 'test1', 'test2' ]
-        
-        input.split(" ")[1].split("/").filter(e => e !== "").forEach(cdFunc);
-        
-        
-        /*
-        if(desiredDir === "")
-        {
-          currentDirectory = fileStructure;
-          curDirStr = "/root";
-        }
-        
-        */
-        
-        /*
-        
-        the follwing is to try to solve traversing through multiple directories at once
-        
-        array desiredDirPortion = split at "/"
-        while(some condition)
-        {
-            if(desiredDirPortion in currentDirectory)
-        }
-
-        
-        */
-        
-        
-        
-        /*
-        if(!desiredDir.includes(".") && desiredDir in currentDirectory )
-        {
-          eval("currentDirectory = currentDirectory." + desiredDir);
-          curDirStr += "/" + desiredDir;
-        }
-        else if(desiredDir === '..')
-        {
-          curDirStr = curDirStr.substr(0, curDirStr.lastIndexOf("/"));
-          debug.innerHTML = curDirStr.substr(5).replace("/", ".");
-          eval("currentDirectory = fileStructure" + curDirStr.substr(5).replace("/", "."));
-        }
-        else
-        {
-          terminal.innerHTML += '<br>invalid directory bla bla idk yet i just started';
-        }
-      
-        */
+          let cdArgRaw = input.split(" ")[1];
+          if(cdArgRaw === undefined || cdArgRaw === "")
+          {
+            currentDirectory = fileStructure;
+            curDirStr = "";
+          }
+          
+          else
+          {
+            var desiredDir = cdArgRaw.split("/").filter(e => e !== ""); // "cd test/test1/test2/" = [ 'test', 'test1', 'test2' ]
+            
+            // cd function should ideally be given current file strucutre, desired directory array, and current directory, and should return either current file strucuture & current directory OR error code
+            
+              let callCd = traverseDir(desiredDir, currentDirectory, curDirStr);
+              if(callCd === -1)
+              {
+                terminal.innerHTML += "<br>cd: " + cdArgRaw + ": Not a directory";
+              }
+              else if(callCd === 1)
+              {
+               terminal.innerHTML += "<br>cd: " + cdArgRaw + ": No such file or directory";
+              }
+              else
+              {
+                currentDirectory = callCd[0];
+                curDirStr = callCd[1];
+              }
+          }
         
       }
       
-      
-      else if(input === "ls")
+      // could just do show object.keys(currendirectoory. args)
+      else if(command === "ls")
       {
-        terminal.innerHTML += '<br>';
-        Object.keys(currentDirectory).forEach(
-          function (item) {
-          eval("if(typeof currentDirectory." + item + " === 'object'){terminal.innerHTML += '<b><font color=\"blue\">' + item + ' </font></b>';} else{terminal.innerHTML += item + ' ';}");
-        });
+        ls :
+        {
+          let inpt = input.split(" ")[1];
+          //if(input.split(" ")[1] === undefined || input.split(" ")[1] === '')
+          if(inpt === undefined || inpt === "")
+          {
+            terminal.innerHTML += '<br>';
+            Object.keys(currentDirectory).forEach(item => eval("if(isFolder(item, currentDirectory)){terminal.innerHTML += '<b><font color=\"blue\">' + item + ' </font></b>';} else{terminal.innerHTML += item + ' ';}"));
+            break ls;
+          }
+          let lsDir = traverseDir(inpt.split("/").filter(e => e !== ""), currentDirectory, curDirStr);
+          
+          debug.innerHTML = lsDir + typeof lsDir[0];
+          
+          if(typeof lsDir[0] === 'object')
+          {
+            terminal.innerHTML += '<br>';
+            
+            Object.keys(lsDir[0]).forEach(item => eval("if(isFolder(item, lsDir[0])){terminal.innerHTML += '<b><font color=\"blue\">' + item + ' </font></b>';} else{terminal.innerHTML += item + ' ';}"));
+          }
+          
+          else if(lsDir === -1 && inpt.substr(inpt.length - 1) !== '/')
+          {
+            terminal.innerHTML += '<br>' + inpt;
+          }
+          
+          else if (lsDir === 1)
+          {
+            terminal.innerHTML += '<br>ls: cannot access '+ input.split(" ")[1] + ': No such file or directory';
+          }
+          else
+          {
+            terminal.innerHTML += '<br>ls: cannot access '+ input.split(" ")[1] + ': Not a directory';
+          }
+          
+        }
       }
       else if(input !== "")
       {
@@ -294,19 +320,61 @@ document.onkeydown = function(e) {
   
 }
 
-function cdFunc(e)
+function isFolder(e, dir)
 {
-  if(!e.includes(".") && e in currentDirectory )
-        {
-          eval("currentDirectory = currentDirectory." + e);
-          curDirStr += "/" + e;
-        }
-  else if(e === '..')
-        {
-          curDirStr = curDirStr.substr(0, curDirStr.lastIndexOf("/"));
-          debug.innerHTML = curDirStr.substr(5).replace("/", ".");
-          eval("currentDirectory = fileStructure" + curDirStr.substr(5).replace("/", "."));
-        }
+  return eval("typeof dir." + e + " === 'object'");
+}
+
+
+function isValidDirectory(e)
+{
+  if(e === undefined || e === "")
+    return true;
+  let desiredDir = e.split("/").filter(e => e !== "");
+  let tempdir = currentDirectory;
+  for(var i = 0; i < desiredDir.length; i++)
+    {
+      if(desiredDir[i] in tempdir && isFolder(desiredDir[i], tempdir))
+        eval("tempdir = tempdir." + desiredDir[i]);
+      else if(desiredDir[i] === '..')
+        eval("tempdir = filestructure" + curDirStr.substr(0, curDirStr.lastIndexOf("/")).split("/").join("."));
+      else
+        return false;
+    }
+    return true;
+}
+
+
+function traverseDir(desiredDir, dir, dirStr)
+{
+  for(let i = 0; i < desiredDir.length; i++)
+  {
+    let dirCheck = desiredDir[i];
+    if(dirCheck in dir && isFolder(dirCheck, dir))
+          {
+            eval("dir = dir." + dirCheck);
+            dirStr += "/" + dirCheck;
+          }
+    else if(dirCheck === '..')
+          {
+            dirStr = dirStr.substr(0, dirStr.lastIndexOf("/"));
+            debug.innerHTML = dirStr.split("/").join(".");
+            eval("dir = fileStructure" + dirStr.split("/").join("."));
+          }
+          
+    // Not a directory
+    else if(dirCheck in dir)
+    {
+      return -1;
+    }
+    
+    // No such file or directory
+    else
+    {
+      return 1;
+    }
+  }
+  return [dir, dirStr];
 }
 
 </script>

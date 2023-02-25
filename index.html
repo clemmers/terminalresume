@@ -363,7 +363,7 @@ function traverseDir(desiredDir, dir, dirStr)
           }
           
     // Not a directory
-    else if(dirCheck in dir)
+    else if(dirCheck in dir && i === desiredDir.length - 1)
     {
       return -1;
     }

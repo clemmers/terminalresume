@@ -107,19 +107,19 @@ from buggy code)
 
 - [FIXED] cd dir works but cd dir/ does not
 
-- user is able to cd into files that are not folders
+- [FIXED] user is able to cd into files that are not folders
 
-- make 'cd ..' from '/root' not send user to ' ' or decide that there should not be a '/root' and just a ' '
+- [FIXED] make 'cd ..' from '/root' not send user to ' ' or decide that there should not be a '/root' and just a ' '
 
 - [FIXED] ls files and folders both folder font/color
 
 - [FIXED] 'cd' will cause error because it is trying to split an undefined
 
-- 'cd invalidDirectory' error message will contain '0' instead of 'invalidDirectory' do not know why
+- [FIXED] 'cd invalidDirectory' error message will contain '0' instead of 'invalidDirectory' do not know why
 
-- 'ls directory' does not work
+- [FIXED] 'ls directory' does not work
 
-- 'chrisclem:~ cd chrisclem/folder1/invalidDirectory' expected to stay in / directory, rather goes into chrisclem/folder1 directory before encountering error
+- [FIXED] 'chrisclem:~ cd chrisclem/folder1/invalidDirectory' expected to stay in / directory, rather goes into chrisclem/folder1 directory before encountering error
 
 - consider curDirStr to be arr rather than formatted string
 
@@ -300,6 +300,25 @@ document.onkeydown = function(e) {
           
         }
       }
+      
+      else if(command === 'cat')
+      {
+        let inpt = input.split(" ")[1];
+        let dirArr = inpt.split("/").filter(e => e !== "");
+
+        let catDir = traverseDir(dirArr, currentDirectory, curDirStr);
+        
+        // doesnt work in following scenario : cat dir1/dir2/../dir2/file
+        if(catDir === -1)
+        {
+          let fileName = dirArr[dirArr.length - 1];
+          dirArr.splice(dirArr.length - 1);
+          debug.innerHTML = dirArr;
+          eval("terminal.innerHTML += '<br>' + traverseDir(dirArr, currentDirectory, curDirStr)[0]." + fileName);
+        }
+      }
+      
+      
       else if(input !== "")
       {
         terminal.innerHTML += "<br>Unknown Command: " + input.split(" ")[0];
@@ -326,6 +345,7 @@ function isFolder(e, dir)
 }
 
 
+// i think this is useless
 function isValidDirectory(e)
 {
   if(e === undefined || e === "")

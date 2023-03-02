@@ -160,13 +160,14 @@ var debug = document.getElementById("debug");
 const commands = [
 ['cat [FILE]', 'concatenate files and print on the standard output'],
 ['cd [dir]', 'Change the shell working directory.'],
+['clear', 'Clear the terminal screen.'],
 ['help [command]', 'Display information about builtin commands.'],
 ['ls [FILE]', 'List directory contents.'],
 ['pwd', 'Print the name of the current working directory.']
 ];
 
 const cmnd = []; 
-commands.forEach(e => cmnd.push(e[0].split(" ")[0]));
+commands.forEach(e => cmnd.push(e[0].split(" ")[0] + ' '));
 
 const fileStructure = 
 {
@@ -254,9 +255,10 @@ document.onkeydown = function(e) {
     e.preventDefault();
     
     let desiredDir = input.split(" ");
-    if(input.length === 1)
+    if(desiredDir.length === 1)
     {
-      
+      if(input !== "")
+        checkTab(currentDirectory, input, cmnd);
     }
     else
     {
@@ -282,7 +284,7 @@ document.onkeydown = function(e) {
             dirContent = cmnd;
             break;
           default :
-            Object.keys(dir).forEach(function(e) {let s = ''; if(isFolder(e, dir)) s = '/'; dirContent.push(e + s)});
+            Object.keys(dir).forEach(function(e) {let s = ''; if(isFolder(e, dir)) s = '/'; else s = ' '; dirContent.push(e + s)});
             break;
           }
           checkTab(dir, desiredDir, dirContent);
@@ -372,13 +374,13 @@ document.onkeydown = function(e) {
         
       else if(command === "help")
       {
-        let arg = input.split(" ")[1];
+        let arg = input.split(" ")[1] + " ";
         if(arg === '' || arg === undefined)
           commands.forEach(e => terminal.innerHTML += '<br>' + e[0]);
         else if(cmnd.includes(arg))
         {
           let index = cmnd.indexOf(arg);
-          terminal.innerHTML += '<br>' + commands[index][0] + " : " + commands[index][1];
+          terminal.innerHTML += '<br>' + commands[index][0] + " - " + commands[index][1];
         }
         else
         {
@@ -541,35 +543,7 @@ function stringMatch( strings, index = 0)
   return stringMatch(strings, index + 1);
 }
 
-/*
-function checkTab(dir, tabInput, onlyFolder)
-{
-  let dirContent = [],
-      match = [];
-  if(onlyFolder)
-    Object.keys(dir).forEach(function(e) {if(isFolder(e, dir))dirContent.push(e + '/')});
-  else
-    Object.keys(dir).forEach(function(e) {let s = ''; if(isFolder(e, dir)) s = '/'; dirContent.push(e + s)});
-  dirContent.forEach(function(e) {if(e.indexOf(tabInput) === 0) match.push(e)});
-  
-  let commonLetters = stringMatch(match);
-  debug.innerHTML = commonLetters;
-  if(commonLetters !== '')
-  {
-    let fill = commonLetters.substring(tabInput.length);
-    terminal.innerHTML += fill;
-    input += fill;
-  }
-  tabNum++;
-  if(tabNum > 1)
-  {
-    terminal.innerHTML += '<br>';
-    match.forEach(e => terminal.innerHTML += e + ' ');
-    terminal.innerHTML +='<br><b><font color="lime">chrisclem</font>:~' + curDirStr + ' $</b> ' + input;
-  }
-}
 
-*/
 
 function checkTab(dir, tabInput, dirContent)
 {
@@ -584,6 +558,7 @@ function checkTab(dir, tabInput, dirContent)
     fill = commonLetters.substring(tabInput.length);
     terminal.innerHTML += fill;
     input += fill;
+    history[historyIndex] += fill;
   }
   if(fill === '')
   {
@@ -620,7 +595,6 @@ function traverseDir(desiredDir, dir, dirStr)
             debug.innerHTML = dirStr.split("/").join(".");
             eval("dir = fileStructure" + dirStr.split("/").join("."));
           }
-          
     // Not a directory
     else if(dirCheck in dir && i === desiredDir.length - 1)
     {
@@ -628,7 +602,7 @@ function traverseDir(desiredDir, dir, dirStr)
     }
     
     // No such file or directory
-    else
+    else if(dirCheck !== '.')
     {
       return 1;
     }

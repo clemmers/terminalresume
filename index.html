@@ -165,6 +165,9 @@ const commands = [
 ['pwd', 'Print the name of the current working directory.']
 ];
 
+const cmnd = []; 
+commands.forEach(e => cmnd.push(e[0].split(" ")[0]));
+
 const fileStructure = 
 {
     chrisclem : 
@@ -260,23 +263,29 @@ document.onkeydown = function(e) {
       desiredDir = desiredDir[desiredDir.length - 1];
       if(desiredDir !== undefined)
       {
-          let onlyFolder = false;
-          switch(input.split(" ")[0])
-          {
-          case "cd" : 
-            onlyFolder = true;
-            break;
-          }
-          
+          let dir;
           if(desiredDir.indexOf("/") !== -1)
           {
             desiredDir = desiredDir.split("/");
-            checkTab(traverseDir(desiredDir.splice(0, desiredDir.length - 1), currentDirectory, curDirStr)[0], desiredDir[0], onlyFolder);
+            dir = traverseDir(desiredDir.splice(0, desiredDir.length - 1), currentDirectory, curDirStr)[0];
+            desiredDir = desiredDir[0];
           }
           else
+            dir = currentDirectory;
+          let dirContent = [];
+          switch(input.split(" ")[0])
           {
-            checkTab(currentDirectory, desiredDir, onlyFolder);
+          case "cd" :
+            Object.keys(dir).forEach(function(e) {if(isFolder(e, dir))dirContent.push(e + '/')});
+            break;
+          case "help" : 
+            dirContent = cmnd;
+            break;
+          default :
+            Object.keys(dir).forEach(function(e) {let s = ''; if(isFolder(e, dir)) s = '/'; dirContent.push(e + s)});
+            break;
           }
+          checkTab(dir, desiredDir, dirContent);
       }
     }
   }
@@ -331,6 +340,8 @@ document.onkeydown = function(e) {
     terminal.innerHTML += key;
     input += key;
     history[historyIndex] += key;
+    terminal.scrollTop = terminal.scrollHeight;
+    tabNum = 0;
   }
   
   else if(key === "Backspace")
@@ -362,8 +373,6 @@ document.onkeydown = function(e) {
       else if(command === "help")
       {
         let arg = input.split(" ")[1];
-        let cmnd = []; 
-        commands.forEach(e => cmnd.push(e[0].split(" ")[0]));
         if(arg === '' || arg === undefined)
           commands.forEach(e => terminal.innerHTML += '<br>' + e[0]);
         else if(cmnd.includes(arg))
@@ -532,7 +541,7 @@ function stringMatch( strings, index = 0)
   return stringMatch(strings, index + 1);
 }
 
-
+/*
 function checkTab(dir, tabInput, onlyFolder)
 {
   let dirContent = [],
@@ -560,7 +569,33 @@ function checkTab(dir, tabInput, onlyFolder)
   }
 }
 
+*/
 
+function checkTab(dir, tabInput, dirContent)
+{
+  let match = [];
+  dirContent.forEach(function(e) {if(e.indexOf(tabInput) === 0) match.push(e)});
+  
+  let commonLetters = stringMatch(match);
+  debug.innerHTML = commonLetters;
+  let fill = '';
+  if(commonLetters !== '')
+  {
+    fill = commonLetters.substring(tabInput.length);
+    terminal.innerHTML += fill;
+    input += fill;
+  }
+  if(fill === '')
+  {
+    tabNum++;
+    if(tabNum > 1)
+    {
+      terminal.innerHTML += '<br>';
+      match.forEach(e => terminal.innerHTML += e + ' ');
+      terminal.innerHTML +='<br><b><font color="lime">chrisclem</font>:~' + curDirStr + ' $</b> ' + input;
+    }
+  }
+}
 
 function isFolder(e, dir)
 {

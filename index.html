@@ -157,15 +157,13 @@ var historyIndex = 0;
 var debug = document.getElementById("debug");
 
 
-const commands = 
-{
-  'cat [FILE]' : 'concatenate files and print on the standard output',
-  'cd [dir]' : 'Change the shell working directory.',
-  'ls [FILE]' : 'List directory contents.',
-  'help [command]' : 'Display information about builtin commands.',
-  'pwd' : 'Print the name of the current working directory.',
-  
-}
+const commands = [
+['cat [FILE]', 'concatenate files and print on the standard output'],
+['cd [dir]', 'Change the shell working directory.'],
+['help [command]', 'Display information about builtin commands.'],
+['ls [FILE]', 'List directory contents.'],
+['pwd', 'Print the name of the current working directory.']
+];
 
 const fileStructure = 
 {
@@ -250,30 +248,37 @@ document.onkeydown = function(e) {
   
   if(key === "Tab")
   {
-    let desiredDir = input.split(" ");
-    desiredDir = desiredDir[desiredDir.length - 1];
     e.preventDefault();
-    if(desiredDir !== undefined)
-    {
-        let onlyFolder = false;
-        switch(input.split(" ")[0])
-        {
-        case "cd" : 
-          onlyFolder = true;
-          break;
-        }
-        
-        if(desiredDir.indexOf("/") !== -1)
-        {
-          desiredDir = desiredDir.split("/");
-          checkTab(traverseDir(desiredDir.splice(0, desiredDir.length - 1), currentDirectory, curDirStr)[0], desiredDir[0], onlyFolder);
-        }
-        else
-        {
-          checkTab(currentDirectory, desiredDir, onlyFolder);
-        }
-    }
     
+    let desiredDir = input.split(" ");
+    if(input.length === 1)
+    {
+      
+    }
+    else
+    {
+      desiredDir = desiredDir[desiredDir.length - 1];
+      if(desiredDir !== undefined)
+      {
+          let onlyFolder = false;
+          switch(input.split(" ")[0])
+          {
+          case "cd" : 
+            onlyFolder = true;
+            break;
+          }
+          
+          if(desiredDir.indexOf("/") !== -1)
+          {
+            desiredDir = desiredDir.split("/");
+            checkTab(traverseDir(desiredDir.splice(0, desiredDir.length - 1), currentDirectory, curDirStr)[0], desiredDir[0], onlyFolder);
+          }
+          else
+          {
+            checkTab(currentDirectory, desiredDir, onlyFolder);
+          }
+      }
+    }
   }
   
   if(key === "ArrowUp")
@@ -356,7 +361,20 @@ document.onkeydown = function(e) {
         
       else if(command === "help")
       {
-        terminal.innerHTML += '';
+        let arg = input.split(" ")[1];
+        let cmnd = []; 
+        commands.forEach(e => cmnd.push(e[0].split(" ")[0]));
+        if(arg === '' || arg === undefined)
+          commands.forEach(e => terminal.innerHTML += '<br>' + e[0]);
+        else if(cmnd.includes(arg))
+        {
+          let index = cmnd.indexOf(arg);
+          terminal.innerHTML += '<br>' + commands[index][0] + " : " + commands[index][1];
+        }
+        else
+        {
+          terminal.innerHTML += '<br> help: no help topics match `' + arg + '\'. Try `help help\'.';
+        }
       }
       
       else if(command === "cd")

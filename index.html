@@ -135,7 +135,7 @@ from buggy code)
 
 - folders should be sorted in alphabetical order (or atleast printed as such in ls) by default without manual sorting
 
-- tab autofill prints not in alphabetical order
+- [fixed assuming given alphabetically] tab autofill prints not in alphabetical order
 
 */
 
@@ -326,6 +326,8 @@ document.onkeydown = function(e) {
     terminal.innerHTML += key;
     input += key;
     history[historyIndex] += key;
+    tabNum = 0;
+    terminal.scrollTop = terminal.scrollHeight;
   }
   
   else if(key === "Backspace")
@@ -526,19 +528,22 @@ function checkTab(dir, tabInput, onlyFolder)
   dirContent.forEach(function(e) {if(e.indexOf(tabInput) === 0) match.push(e)});
   
   let commonLetters = stringMatch(match);
-  debug.innerHTML = commonLetters;
-  if(commonLetters !== '')
+  let fill = commonLetters.substring(tabInput.length);
+  debug.innerHTML = fill;
+  if(fill !== '')
   {
-    let fill = commonLetters.substring(tabInput.length);
     terminal.innerHTML += fill;
     input += fill;
   }
-  tabNum++;
-  if(tabNum > 1)
+  else
   {
-    terminal.innerHTML += '<br>';
-    match.forEach(e => terminal.innerHTML += e + ' ');
-    terminal.innerHTML +='<br><b><font color="lime">chrisclem</font>:~' + curDirStr + ' $</b> ' + input;
+    tabNum++;
+    if(tabNum > 1)
+    {
+      terminal.innerHTML += '<br>';
+      match.forEach(e => terminal.innerHTML += e + ' ');
+      terminal.innerHTML +='<br><b><font color="lime">chrisclem</font>:~' + curDirStr + ' $</b> ' + input;
+    }
   }
 }
 

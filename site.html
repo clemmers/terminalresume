@@ -1,0 +1,587 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>my cool site</title>
+<style>
+
+body {
+  background-color: black;
+  font-family: monospace;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 97%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+#cursor {
+  display: inline-block;
+  border: none;
+  background-color: white;
+  font-size: 12px;
+}
+
+#cursor.onHover {
+  border-style: solid;
+  border-width: 1px;
+  border-color: white;
+  font-size: 12;
+}
+
+#terminal-wrap {
+  position: relative;
+  width: 50%;
+  background-color: black;
+  display: flex;
+  align-items: flex-start;
+  padding: 5px;
+  border: 1px solid white;
+  overflow: hidden;
+}
+
+
+#terminal {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  width: 100%;
+  overflow-y: scroll;
+  
+}
+
+
+#debug
+{
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  color: red;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+<div id="terminal-wrap">
+  <div style="font-size: 0;">
+    <span id="terminal" style="font-size: 12px;">
+        <div id="date" style="font-size: 12px;"></div>
+      <b><font color="lime">chrisclem</font>:~/chrisclem $</b>
+    </span>
+    <font id="cursor">&nbsp;</font>
+    </div>
+</div>
+<div id="debug">Debug</div>
+<!---->
+
+<script>
+/*
+known issues in function besides basic developmental issues rooted in lack of intended development
+(ex. issues such as " 'help' is not a valid command " are not listed as they are not rooted from
+development bugs, rather the code is just not fully developed yet, but issues such as
+" 'cd ..' moves user ahead a folder instead of behind a folder " are valid issues as they are caused
+from buggy code)
+
+- [FIXED] typing "chrisclem" will make it impossible to delete following 
+          text because it thinks that it is a newline
+          IDEA TO FIX THIS !!! IDEA IS whenever enter is pressed it takes
+          the index of the newline and uses that instead of the
+          lastindexof"chrisclem" 11
+  
+- [FIXED] after clearing terminal a ">" key appears to be somewhere?? so no commands work
+      [FIXED] =>  no > anymore after changing how input is handled, however commands still do
+      do not work after clearing the terminal
+      
+- [FIXED] does not read first line properly
+
+- [FIXED] fix all of the above problems and make it overall more efficient if instead of just
+  looking at a substring of html element keep track of typed characters in seperate
+  string
+  
+- user can type out of margins and bounds whops
+
+- cannot delete '<', '>', '&' characters, dont know why (deleted from input string
+  but does not disappear in html visual)
+  
+- Initiating shortcuts such as ctrl a will cause letter such as 'a' to be displayed
+  
+- [FIXED (mostly) ] history function does not work properly i kinda broke it lol trying to make it better
+
+- moving cursor back and forth does not work properly
+
+- [FIXED] cd dir works but cd dir/ does not
+
+- [FIXED] user is able to cd into files that are not folders
+
+- [FIXED] make 'cd ..' from '/root' not send user to ' ' or decide that there should not be a '/root' and just a ' '
+
+- [FIXED] ls files and folders both folder font/color
+
+- [FIXED] 'cd' will cause error because it is trying to split an undefined
+
+- [FIXED] 'cd invalidDirectory' error message will contain '0' instead of 'invalidDirectory' do not know why
+
+- [FIXED] 'ls directory' does not work
+
+- [FIXED] 'chrisclem:~ cd chrisclem/folder1/invalidDirectory' expected to stay in / directory, rather goes into chrisclem/folder1 directory before encountering error
+
+- consider curDirStr to be arr rather than formatted string
+
+- folders should be sorted in alphabetical order (or atleast printed as such in ls) by default without manual sorting
+
+- tab autofill prints not in alphabetical order
+
+- make cat concatinate multiple files
+*/
+
+// parseInt(window.getComputedStyle(document.getElementById("terminal")).fontSize, 10)
+var height1 = document.getElementById("terminal").clientHeight;
+var height = Math.round(document.body.scrollHeight * .5625 / height1) * height1;
+
+document.getElementById("terminal-wrap").style.height = height + "px";
+
+document.getElementById("terminal").style.height = height + "px";
+
+
+var terminal = document.getElementById("terminal");
+// var cursor = document.getElementById("cursor");
+var input = "";
+const history = [""];
+var historyIndex = 0;
+
+var debug = document.getElementById("debug");
+
+
+const commands = 
+{
+  'cat [FILE]' : 'concatenate files and print on the standard output',
+  'cd [dir]' : 'Change the shell working directory.',
+  'ls [FILE]' : 'List directory contents.',
+  'help [command]' : 'Display information about builtin commands.',
+  'pwd' : 'Print the name of the current working directory.',
+  
+}
+
+const fileStructure = 
+{
+    chrisclem : 
+    {
+      education: '<b style="color: DodgerBlue"><a href="https://goo.gl/maps/C6VW1p2zdhyGBFXc8">Crescenta Valley High School</a> (August 2020 to Current)</b>'
+               + '<br>info about my academic achievements<br>interesting info',
+      employment: '<b>Mitch Clem Management<br><a href="https://goo.gl/maps/HQi3KsBrJepPHcN66"><font style="font-size: 12px; line-height: 0px">&#128205</font> Glendale, CA</a></b>'
+                + '<br>Social Media Presence Manager (March 2020 to Current)<br> Improved page content,'
+                + ' keyword releveancy, and branding to achieve search engine optimization goals<br>'
+                + ' Discussed site requirements with client to produce actionable development plans and budgets',
+      projects: 
+      {
+        github: '<a href="https://github.com/clemmers"><font style="font-size: 12px; line-height: 0px">&#128279;</font> <b>GitHub/clemmers</a></b>',
+        project1:
+        {
+          test: 'blahblah'
+        }
+      },
+      skills: '- Fast Learner<br>- Complex Problem Solving<br>- Advanced Analytical Thinking<br>'
+            + '- Teamwork<br>- Agile Development Methodology<br>- Unix Shell<br>'
+            + '- Code Analysis and Development<br>- Programing Languages: Java, JavaScript, Python'
+    },
+    file1a : {
+    chrisclem : {
+        folder1: {
+          coolfile: 'yuhhh',
+          foldie: {
+            filebile: 'test'
+          }
+        },
+        folder2: {
+          coolfile: 'yuhhh but different'
+        },
+        file: 'data!!! i love data i think it is very possible that i may become addicted to drugs in the future',
+        funfile: 'yoyo'
+    }
+}
+};
+
+
+var currentDirectory = fileStructure.chrisclem;
+var curDirStr = "/chrisclem";
+
+const dateS = new Date();
+var date = document.getElementById("date");
+date.innerHTML = "<font color='grey'>" + dateS + "</font>";
+
+
+var cursorPositionLeft = 0;
+
+var tabNum = 0;
+
+// printCursor("white");
+
+/*
+const res = await fetch('https://api.github.com/users/clemmers/repos');
+if (res.ok) {
+  const data = await res.json();
+  terminal.innerHTML += JSON.stringify(data, null, 4);
+}
+
+*/
+
+terminal.addEventListener('wheel', function(e) {
+    var delta = e.deltaY || e.detail || e.wheelDelta;
+    if (delta < 0)
+    {
+      e.preventDefault();
+      terminal.scrollTop -= height1;
+    }
+    else
+    {
+      e.preventDefault();
+      terminal.scrollTop += height1;
+    }
+  });
+
+
+document.onkeydown = function(e) {
+  var key = e.key;
+  
+  if(key === "Tab")
+  {
+    let desiredDir = input.split(" ")[1]
+    e.preventDefault();
+    if(desiredDir !== undefined)
+    {
+        let fileType = 6;
+        switch(input.split(" ")[0])
+        {
+        case "cd" : 
+          fileType = 2;
+          break;
+        case "cat" :
+          fileType = 3;
+          break;
+        }
+        
+        if(desiredDir.indexOf("/") !== -1)
+        {
+          desiredDir = desiredDir.split("/");
+          checkTab(traverseDir(desiredDir.splice(0, desiredDir.length - 1), currentDirectory, curDirStr)[0], desiredDir[0], fileType);
+        }
+        else
+        {
+          checkTab(currentDirectory, desiredDir, fileType);
+        }
+    }
+    
+  }
+  
+  if(key === "ArrowUp")
+  {
+    e.preventDefault();
+    if(historyIndex < history.length - 1 && history.length != 0)
+    {
+      historyIndex ++;
+      terminal.innerHTML = terminal.innerHTML.substr(0, terminal.innerHTML.length - input.length) + history[historyIndex];
+      input = history[historyIndex];
+    }
+  }
+  if(key === "ArrowDown")
+  {
+    e.preventDefault();
+    if(historyIndex > 0)
+    {
+      historyIndex --;
+      terminal.innerHTML = terminal.innerHTML.substr(0, terminal.innerHTML.length - input.length) + history[historyIndex];
+      input = history[historyIndex];
+      
+    }
+  }
+  
+  
+  /*
+  if(key === "ArrowLeft")
+  {
+    printCursor("black");
+    cursorPositionLeft ++;
+    printCursor("white");
+  }
+  
+  */
+  
+/*  
+  
+  if(key === "ArrowLeft")
+  {
+    cursorPositionLeft ++;
+    cursor.innerHTML = "";
+    terminal.innerHTML = terminal.innerHTML.substr(0, terminal.innerHTML.length  - cursorPositionLeft) + "<font id='cursor'>&nbsp;</font>" + terminal.innerHTML.substr(terminal.innerHTML.length - cursorPositionLeft + 1);
+    cursor = document.getElementById("cursor");
+  }
+  
+*/  
+  
+  if(key.length === 1)
+  {
+    terminal.innerHTML += key;
+    input += key;
+    history[historyIndex] += key;
+  }
+  
+  else if(key === "Backspace")
+  {
+    if(input.length > 0)
+    {
+      terminal.innerHTML = terminal.innerHTML.substr(0, terminal.innerHTML.length - 1);
+      input = input.substr(0, input.length - 1);
+      if(historyIndex != -1)
+      {
+        history[historyIndex] = history[historyIndex].substr(0, history[historyIndex].length - 1);
+      }
+    }
+  }
+  else if(key === "Enter")
+  {
+    if(input === "clear")
+    {
+      terminal.innerHTML = "<b><font color='lime'>chrisclem</font>:~" + curDirStr + " $</b> ";
+    }
+    else
+    {
+      var command = input.split(" ")[0];
+      // if(command)
+      
+      if(command === "pwd")
+        terminal.innerHTML += '<br>' + curDirStr;
+        
+      else if(command === "help")
+      {
+        terminal.innerHTML += '';
+      }
+      
+      else if(command === "cd")
+      {
+        
+          let cdArgRaw = input.split(" ")[1];
+          if(cdArgRaw === undefined || cdArgRaw === "")
+          {
+            currentDirectory = fileStructure;
+            curDirStr = "";
+          }
+          
+          else
+          {
+            var desiredDir = cdArgRaw.split("/").filter(e => e !== ""); // "cd test/test1/test2/" = [ 'test', 'test1', 'test2' ]
+            
+            // cd function should ideally be given current file strucutre, desired directory array, and current directory, and should return either current file strucuture & current directory OR error code
+            
+              let callCd = traverseDir(desiredDir, currentDirectory, curDirStr);
+              if(callCd === -1)
+              {
+                terminal.innerHTML += "<br>cd: " + cdArgRaw + ": Not a directory";
+              }
+              else if(callCd === 1)
+              {
+               terminal.innerHTML += "<br>cd: " + cdArgRaw + ": No such file or directory";
+              }
+              else
+              {
+                currentDirectory = callCd[0];
+                curDirStr = callCd[1];
+              }
+          }
+        
+      }
+      
+      // could just do show object.keys(currendirectoory. args)
+      else if(command === "ls")
+      {
+        ls :
+        {
+          let inpt = input.split(" ")[1];
+          //if(input.split(" ")[1] === undefined || input.split(" ")[1] === '')
+          if(inpt === undefined || inpt === "")
+          {
+            terminal.innerHTML += '<br>';
+            Object.keys(currentDirectory).forEach(item => eval("if(isFolder(item, currentDirectory)){terminal.innerHTML += '<b><font color=\"DodgerBlue\">' + item + ' </font></b>';} else{terminal.innerHTML += item + ' ';}"));
+            break ls;
+          }
+          let lsDir = traverseDir(inpt.split("/").filter(e => e !== ""), currentDirectory, curDirStr);
+          
+          debug.innerHTML = lsDir + typeof lsDir[0];
+          
+          if(typeof lsDir[0] === 'object')
+          {
+            terminal.innerHTML += '<br>';
+            
+            Object.keys(lsDir[0]).forEach(item => eval("if(isFolder(item, lsDir[0])){terminal.innerHTML += '<b><font color=\"DodgerBlue\">' + item + ' </font></b>';} else{terminal.innerHTML += item + ' ';}"));
+          }
+          
+          else if(lsDir === -1 && inpt.substr(inpt.length - 1) !== '/')
+          {
+            terminal.innerHTML += '<br>' + inpt;
+          }
+          
+          else if (lsDir === 1)
+          {
+            terminal.innerHTML += '<br>ls: cannot access '+ input.split(" ")[1] + ': No such file or directory';
+          }
+          else
+          {
+            terminal.innerHTML += '<br>ls: cannot access '+ input.split(" ")[1] + ': Not a directory';
+          }
+          
+        }
+      }
+      
+      else if(command === 'cat')
+      {
+        let test = input.split(" ");
+        test = test.splice(1, test.length);
+        let inpt = input.split(" ")[1];
+        let dirArr = inpt.split("/").filter(e => e !== "");
+        
+        let catDir = traverseDir(dirArr, currentDirectory, curDirStr);
+        
+        if(catDir === -1)
+        {
+          let fileName = dirArr[dirArr.length - 1];
+          dirArr.splice(dirArr.length - 1);
+          debug.innerHTML = dirArr;
+          eval("terminal.innerHTML += '<br>' + traverseDir(dirArr, currentDirectory, curDirStr)[0]." + fileName);
+        }
+        else if(catDir === 1)
+        {
+          terminal.innerHTML += '<br>cat: ' + inpt + ': No such file or directory';
+        }
+        else
+        {
+          terminal.innerHTML += '<br>cat: ' + inpt + ': Is a directory';
+        }
+      }
+      
+      
+      else if(input !== "")
+      {
+        terminal.innerHTML += "<br>Unknown Command: " + input.split(" ")[0];
+      }
+      if(historyIndex > 0)
+      {
+        history[0] = history[historyIndex];
+        // input = history[historyIndex];
+      }
+        terminal.innerHTML += "<br><b><font color='lime'>chrisclem</font>:~" + curDirStr + " $</b> "; // Object.keys(currentDirectory)
+    }
+    if(history[historyIndex] !== "")
+      if(history[0] !== "")
+        history.unshift("");
+    historyIndex = 0;
+    input = "";
+    terminal.scrollTop = terminal.scrollHeight;
+    tabNum = 0;
+  }
+  
+}
+
+/*
+function printCursor(color)
+{
+  if(cursorPositionLeft === 0)
+  {
+    terminal.textContent += "<font style='background-color: " + color + "'>&nbsp;</font>";
+    return;
+  }
+  let index = terminal.textContent.length - cursorPositionLeft;
+  terminal.textContent = terminal.textContent.substring(0, index-1) + "<font style='background-color: " + color + "'>" + terminal.textContent.substring(index, index+1) + "</font>" + terminal.textContent.substring(index+1);
+}
+
+*/
+
+// takes array of strings and returns a string of first shared consecutive characters
+// ex. stringMatch(['hello', 'help!', 'heliograph']) would return 'hel'
+function stringMatch( strings, index = 0)
+{
+  if (strings.length === 1) return strings[0];
+  for(let i = 0; i < strings.length - 1; i++)
+    if(strings[i].substring(0, index + 1) !== strings[i + 1].substring(0, index + 1))
+      return strings[i].substring(0, index);
+  return stringMatch(strings, index + 1);
+}
+
+
+// fileType numbers: 2 folder 3 file 6 both
+function checkTab(dir, tabInput, fileType)
+{
+  let dirContent = [],
+      match = [];
+  if(fileType % 2 === 0)
+    Object.keys(dir).forEach(function(e) {if(isFolder(e, dir))dirContent.push(e + '/')});
+  if(fileType % 3 === 0)
+    Object.keys(dir).forEach(function(e) {if(!isFolder(e, dir))dirContent.push(e)});
+  dirContent.forEach(function(e) {if(e.indexOf(tabInput) === 0) match.push(e)});
+  
+  let commonLetters = stringMatch(match);
+  debug.innerHTML = commonLetters;
+  if(commonLetters !== '')
+  {
+    let fill = commonLetters.substring(tabInput.length);
+    terminal.innerHTML += fill;
+    input += fill;
+  }
+  tabNum++;
+  if(tabNum > 1)
+  {
+    terminal.innerHTML += '<br>';
+    match.forEach(e => terminal.innerHTML += e + ' ');
+    terminal.innerHTML +='<br><b><font color="lime">chrisclem</font>:~' + curDirStr + ' $</b> ' + input;
+  }
+}
+
+
+
+function isFolder(e, dir)
+{
+  return eval("typeof dir." + e + " === 'object'");
+}
+
+
+
+function traverseDir(desiredDir, dir, dirStr)
+{
+  for(let i = 0; i < desiredDir.length; i++)
+  {
+    let dirCheck = desiredDir[i];
+    if(dirCheck in dir && isFolder(dirCheck, dir))
+          {
+            eval("dir = dir." + dirCheck);
+            dirStr += "/" + dirCheck;
+          }
+    else if(dirCheck === '..')
+          {
+            dirStr = dirStr.substr(0, dirStr.lastIndexOf("/"));
+            debug.innerHTML = dirStr.split("/").join(".");
+            eval("dir = fileStructure" + dirStr.split("/").join("."));
+          }
+          
+    // Not a directory
+    else if(dirCheck in dir && i === desiredDir.length - 1)
+    {
+      return -1;
+    }
+    
+    // No such file or directory
+    else
+    {
+      return 1;
+    }
+  }
+  return [dir, dirStr];
+}
+
+</script>
+
+</body>
+</html>

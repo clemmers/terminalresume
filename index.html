@@ -250,29 +250,27 @@ document.onkeydown = function(e) {
   
   if(key === "Tab")
   {
-    let desiredDir = input.split(" ")[1]
+    let desiredDir = input.split(" ");
+    desiredDir = desiredDir[desiredDir.length - 1];
     e.preventDefault();
     if(desiredDir !== undefined)
     {
-        let fileType = 6;
+        let onlyFolder = false;
         switch(input.split(" ")[0])
         {
         case "cd" : 
-          fileType = 2;
-          break;
-        case "cat" :
-          fileType = 3;
+          onlyFolder = true;
           break;
         }
         
         if(desiredDir.indexOf("/") !== -1)
         {
           desiredDir = desiredDir.split("/");
-          checkTab(traverseDir(desiredDir.splice(0, desiredDir.length - 1), currentDirectory, curDirStr)[0], desiredDir[0], fileType);
+          checkTab(traverseDir(desiredDir.splice(0, desiredDir.length - 1), currentDirectory, curDirStr)[0], desiredDir[0], onlyFolder);
         }
         else
         {
-          checkTab(currentDirectory, desiredDir, fileType);
+          checkTab(currentDirectory, desiredDir, onlyFolder);
         }
     }
     
@@ -440,26 +438,8 @@ document.onkeydown = function(e) {
       {
         let test = input.split(" ");
         test = test.splice(1, test.length);
-        let inpt = input.split(" ")[1];
-        let dirArr = inpt.split("/").filter(e => e !== "");
+        test.forEach(e => print(e));
         
-        let catDir = traverseDir(dirArr, currentDirectory, curDirStr);
-        
-        if(catDir === -1)
-        {
-          let fileName = dirArr[dirArr.length - 1];
-          dirArr.splice(dirArr.length - 1);
-          debug.innerHTML = dirArr;
-          eval("terminal.innerHTML += '<br>' + traverseDir(dirArr, currentDirectory, curDirStr)[0]." + fileName);
-        }
-        else if(catDir === 1)
-        {
-          terminal.innerHTML += '<br>cat: ' + inpt + ': No such file or directory';
-        }
-        else
-        {
-          terminal.innerHTML += '<br>cat: ' + inpt + ': Is a directory';
-        }
       }
       
       
@@ -499,6 +479,30 @@ function printCursor(color)
 
 */
 
+// prints file to terminal
+function print(inpt)
+{
+  let dirArr = inpt.split("/").filter(e => e !== "");
+        
+  let catDir = traverseDir(dirArr, currentDirectory, curDirStr);
+  
+  if(catDir === -1)
+  {
+    let fileName = dirArr[dirArr.length - 1];
+    dirArr.splice(dirArr.length - 1);
+    debug.innerHTML = dirArr;
+    eval("terminal.innerHTML += '<br>' + traverseDir(dirArr, currentDirectory, curDirStr)[0]." + fileName);
+  }
+  else if(catDir === 1)
+  {
+    terminal.innerHTML += '<br>cat: ' + inpt + ': No such file or directory';
+   }
+  else
+  {
+    terminal.innerHTML += '<br>cat: ' + inpt + ': Is a directory';
+  }
+}
+
 // takes array of strings and returns a string of first shared consecutive characters
 // ex. stringMatch(['hello', 'help!', 'heliograph']) would return 'hel'
 function stringMatch( strings, index = 0)
@@ -511,15 +515,14 @@ function stringMatch( strings, index = 0)
 }
 
 
-// fileType numbers: 2 folder 3 file 6 both
-function checkTab(dir, tabInput, fileType)
+function checkTab(dir, tabInput, onlyFolder)
 {
   let dirContent = [],
       match = [];
-  if(fileType % 2 === 0)
+  if(onlyFolder)
     Object.keys(dir).forEach(function(e) {if(isFolder(e, dir))dirContent.push(e + '/')});
-  if(fileType % 3 === 0)
-    Object.keys(dir).forEach(function(e) {if(!isFolder(e, dir))dirContent.push(e)});
+  else
+    Object.keys(dir).forEach(function(e) {let s = ''; if(isFolder(e, dir)) s = '/'; dirContent.push(e + s)});
   dirContent.forEach(function(e) {if(e.indexOf(tabInput) === 0) match.push(e)});
   
   let commonLetters = stringMatch(match);

@@ -1,22 +1,29 @@
 <html>
 <head>
+<meta charset="UTF-8">
 <title>my cool site</title>
 <style>
+
 body {
   background-color: black;
   font-family: monospace;
   color: white;
-  padding: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 97%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
 #cursor {
+  display: inline-block;
   border: none;
   background-color: white;
-  font-size: 12;
+  font-size: 12px;
 }
 
 #cursor.onHover {
@@ -27,23 +34,26 @@ body {
 }
 
 #terminal-wrap {
+  position: relative;
   width: 50%;
-  height: 56.25%;
   background-color: black;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start; /* aligns the text to the top left of the rectangle */
-  align-items: flex-start; /* aligns the text to the top left of the rectangle */
-  padding: 5px; /* adds padding to the top left of the rectangle */
-  overflow: hidden; /* prevents text from spilling out of the rectangle */
-  border: 1px solid white; /* adds an outline to the rectangle */
+  align-items: flex-start;
+  padding: 5px;
+  border: 1px solid white;
+  overflow: hidden;
 }
 
-#terminal
-{
-  margin: auto;
+
+#terminal {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
   width: 100%;
+  overflow-y: scroll;
+  
 }
+
 
 #debug
 {
@@ -59,13 +69,13 @@ body {
 </head>
 <body>
 <div id="terminal-wrap">
-  <div id="date"></div>
   <div style="font-size: 0;">
-    <span id="terminal" style="font-size: 12;">
+    <span id="terminal" style="font-size: 12px;">
+        <div id="date" style="font-size: 12px;"></div>
       <b><font color="lime">chrisclem</font>:~/chrisclem $</b>
     </span>
     <font id="cursor">&nbsp;</font>
-  </div>
+    </div>
 </div>
 <div id="debug">Debug</div>
 <!---->
@@ -123,17 +133,62 @@ from buggy code)
 
 - consider curDirStr to be arr rather than formatted string
 
+- folders should be sorted in alphabetical order (or atleast printed as such in ls) by default without manual sorting
+
+- tab autofill prints not in alphabetical order
 */
 
+// parseInt(window.getComputedStyle(document.getElementById("terminal")).fontSize, 10)
+var height1 = document.getElementById("terminal").clientHeight;
+var height = Math.round(document.body.scrollHeight * .5625 / height1) * height1;
+
+document.getElementById("terminal-wrap").style.height = height + "px";
+
+document.getElementById("terminal").style.height = height + "px";
+
+
 var terminal = document.getElementById("terminal");
-var cursor = document.getElementById("cursor");
+// var cursor = document.getElementById("cursor");
 var input = "";
 const history = [""];
 var historyIndex = 0;
 
 var debug = document.getElementById("debug");
 
-const fileStructure = {
+
+const commands = 
+{
+  'cat [FILE]' : 'concatenate files and print on the standard output',
+  'cd [dir]' : 'Change the shell working directory.',
+  'ls [FILE]' : 'List directory contents.',
+  'help [command]' : 'Display information about builtin commands.',
+  'pwd' : 'Print the name of the current working directory.',
+  
+}
+
+const fileStructure = 
+{
+    chrisclem : 
+    {
+      education: '<b style="color: DodgerBlue"><a href="https://goo.gl/maps/C6VW1p2zdhyGBFXc8">Crescenta Valley High School</a> (August 2020 to Current)</b>'
+               + '<br>info about my academic achievements<br>interesting info',
+      employment: '<b>Mitch Clem Management<br><a href="https://goo.gl/maps/HQi3KsBrJepPHcN66"><font style="font-size: 12px; line-height: 0px">&#128205</font> Glendale, CA</a></b>'
+                + '<br>Social Media Presence Manager (March 2020 to Current)<br> Improved page content,'
+                + ' keyword releveancy, and branding to achieve search engine optimization goals<br>'
+                + ' Discussed site requirements with client to produce actionable development plans and budgets',
+      projects: 
+      {
+        github: '<a href="https://github.com/clemmers"><font style="font-size: 12px; line-height: 0px">&#128279;</font> <b>GitHub/clemmers</a></b>',
+        project1:
+        {
+          test: 'blahblah'
+        }
+      },
+      skills: '- Fast Learner<br>- Complex Problem Solving<br>- Advanced Analytical Thinking<br>'
+            + '- Teamwork<br>- Agile Development Methodology<br>- Unix Shell<br>'
+            + '- Code Analysis and Development<br>- Programing Languages: Java, JavaScript, Python'
+    },
+    file1a : {
     chrisclem : {
         folder1: {
           coolfile: 'yuhhh',
@@ -144,10 +199,13 @@ const fileStructure = {
         folder2: {
           coolfile: 'yuhhh but different'
         },
-        resume: 'data!!! i love data i think it is very possible that i may become addicted to drugs in the future',
+        file: 'data!!! i love data i think it is very possible that i may become addicted to drugs in the future',
         funfile: 'yoyo'
     }
+}
 };
+
+
 var currentDirectory = fileStructure.chrisclem;
 var curDirStr = "/chrisclem";
 
@@ -158,11 +216,70 @@ date.innerHTML = "<font color='grey'>" + dateS + "</font>";
 
 var cursorPositionLeft = 0;
 
+var tabNum = 0;
+
+// printCursor("white");
+
+/*
+const res = await fetch('https://api.github.com/users/clemmers/repos');
+if (res.ok) {
+  const data = await res.json();
+  terminal.innerHTML += JSON.stringify(data, null, 4);
+}
+
+*/
+
+terminal.addEventListener('wheel', function(e) {
+    var delta = e.deltaY || e.detail || e.wheelDelta;
+    if (delta < 0)
+    {
+      e.preventDefault();
+      terminal.scrollTop -= height1;
+    }
+    else
+    {
+      e.preventDefault();
+      terminal.scrollTop += height1;
+    }
+  });
+
+
 document.onkeydown = function(e) {
   var key = e.key;
   
+  if(key === "Tab")
+  {
+    let desiredDir = input.split(" ")[1]
+    e.preventDefault();
+    if(desiredDir !== undefined)
+    {
+        let fileType = 6;
+        switch(input.split(" ")[0])
+        {
+        case "cd" : 
+          fileType = 2;
+          break;
+        case "cat" :
+          fileType = 3;
+          break;
+        }
+        
+        if(desiredDir.indexOf("/") !== -1)
+        {
+          desiredDir = desiredDir.split("/");
+          checkTab(traverseDir(desiredDir.splice(0, desiredDir.length - 1), currentDirectory, curDirStr)[0], desiredDir[0], fileType);
+        }
+        else
+        {
+          checkTab(currentDirectory, desiredDir, fileType);
+        }
+    }
+    
+  }
+  
   if(key === "ArrowUp")
   {
+    e.preventDefault();
     if(historyIndex < history.length - 1 && history.length != 0)
     {
       historyIndex ++;
@@ -172,6 +289,7 @@ document.onkeydown = function(e) {
   }
   if(key === "ArrowDown")
   {
+    e.preventDefault();
     if(historyIndex > 0)
     {
       historyIndex --;
@@ -182,6 +300,17 @@ document.onkeydown = function(e) {
   }
   
   
+  /*
+  if(key === "ArrowLeft")
+  {
+    printCursor("black");
+    cursorPositionLeft ++;
+    printCursor("white");
+  }
+  
+  */
+  
+/*  
   
   if(key === "ArrowLeft")
   {
@@ -191,7 +320,7 @@ document.onkeydown = function(e) {
     cursor = document.getElementById("cursor");
   }
   
-  
+*/  
   
   if(key.length === 1)
   {
@@ -199,6 +328,7 @@ document.onkeydown = function(e) {
     input += key;
     history[historyIndex] += key;
   }
+  
   else if(key === "Backspace")
   {
     if(input.length > 0)
@@ -225,7 +355,11 @@ document.onkeydown = function(e) {
       if(command === "pwd")
         terminal.innerHTML += '<br>' + curDirStr;
         
-        
+      else if(command === "help")
+      {
+        terminal.innerHTML += '';
+      }
+      
       else if(command === "cd")
       {
         
@@ -270,7 +404,7 @@ document.onkeydown = function(e) {
           if(inpt === undefined || inpt === "")
           {
             terminal.innerHTML += '<br>';
-            Object.keys(currentDirectory).forEach(item => eval("if(isFolder(item, currentDirectory)){terminal.innerHTML += '<b><font color=\"blue\">' + item + ' </font></b>';} else{terminal.innerHTML += item + ' ';}"));
+            Object.keys(currentDirectory).forEach(item => eval("if(isFolder(item, currentDirectory)){terminal.innerHTML += '<b><font color=\"DodgerBlue\">' + item + ' </font></b>';} else{terminal.innerHTML += item + ' ';}"));
             break ls;
           }
           let lsDir = traverseDir(inpt.split("/").filter(e => e !== ""), currentDirectory, curDirStr);
@@ -281,7 +415,7 @@ document.onkeydown = function(e) {
           {
             terminal.innerHTML += '<br>';
             
-            Object.keys(lsDir[0]).forEach(item => eval("if(isFolder(item, lsDir[0])){terminal.innerHTML += '<b><font color=\"blue\">' + item + ' </font></b>';} else{terminal.innerHTML += item + ' ';}"));
+            Object.keys(lsDir[0]).forEach(item => eval("if(isFolder(item, lsDir[0])){terminal.innerHTML += '<b><font color=\"DodgerBlue\">' + item + ' </font></b>';} else{terminal.innerHTML += item + ' ';}"));
           }
           
           else if(lsDir === -1 && inpt.substr(inpt.length - 1) !== '/')
@@ -303,18 +437,27 @@ document.onkeydown = function(e) {
       
       else if(command === 'cat')
       {
+        let test = input.split(" ");
+        test = test.splice(1, test.length);
         let inpt = input.split(" ")[1];
         let dirArr = inpt.split("/").filter(e => e !== "");
-
+        
         let catDir = traverseDir(dirArr, currentDirectory, curDirStr);
         
-        // doesnt work in following scenario : cat dir1/dir2/../dir2/file
         if(catDir === -1)
         {
           let fileName = dirArr[dirArr.length - 1];
           dirArr.splice(dirArr.length - 1);
           debug.innerHTML = dirArr;
           eval("terminal.innerHTML += '<br>' + traverseDir(dirArr, currentDirectory, curDirStr)[0]." + fileName);
+        }
+        else if(catDir === 1)
+        {
+          terminal.innerHTML += '<br>cat: ' + inpt + ': No such file or directory';
+        }
+        else
+        {
+          terminal.innerHTML += '<br>cat: ' + inpt + ': Is a directory';
         }
       }
       
@@ -335,34 +478,73 @@ document.onkeydown = function(e) {
         history.unshift("");
     historyIndex = 0;
     input = "";
+    terminal.scrollTop = terminal.scrollHeight;
+    tabNum = 0;
   }
   
 }
+
+/*
+function printCursor(color)
+{
+  if(cursorPositionLeft === 0)
+  {
+    terminal.textContent += "<font style='background-color: " + color + "'>&nbsp;</font>";
+    return;
+  }
+  let index = terminal.textContent.length - cursorPositionLeft;
+  terminal.textContent = terminal.textContent.substring(0, index-1) + "<font style='background-color: " + color + "'>" + terminal.textContent.substring(index, index+1) + "</font>" + terminal.textContent.substring(index+1);
+}
+
+*/
+
+// takes array of strings and returns a string of first shared consecutive characters
+// ex. stringMatch(['hello', 'help!', 'heliograph']) would return 'hel'
+function stringMatch( strings, index = 0)
+{
+  if (strings.length === 1) return strings[0];
+  for(let i = 0; i < strings.length - 1; i++)
+    if(strings[i].substring(0, index + 1) !== strings[i + 1].substring(0, index + 1))
+      return strings[i].substring(0, index);
+  return stringMatch(strings, index + 1);
+}
+
+
+// fileType numbers: 2 folder 3 file 6 both
+function checkTab(dir, tabInput, fileType)
+{
+  let dirContent = [],
+      match = [];
+  if(fileType % 2 === 0)
+    Object.keys(dir).forEach(function(e) {if(isFolder(e, dir))dirContent.push(e + '/')});
+  if(fileType % 3 === 0)
+    Object.keys(dir).forEach(function(e) {if(!isFolder(e, dir))dirContent.push(e)});
+  dirContent.forEach(function(e) {if(e.indexOf(tabInput) === 0) match.push(e)});
+  
+  let commonLetters = stringMatch(match);
+  debug.innerHTML = commonLetters;
+  if(commonLetters !== '')
+  {
+    let fill = commonLetters.substring(tabInput.length);
+    terminal.innerHTML += fill;
+    input += fill;
+  }
+  tabNum++;
+  if(tabNum > 1)
+  {
+    terminal.innerHTML += '<br>';
+    match.forEach(e => terminal.innerHTML += e + ' ');
+    terminal.innerHTML +='<br><b><font color="lime">chrisclem</font>:~' + curDirStr + ' $</b> ' + input;
+  }
+}
+
+
 
 function isFolder(e, dir)
 {
   return eval("typeof dir." + e + " === 'object'");
 }
 
-
-// i think this is useless
-function isValidDirectory(e)
-{
-  if(e === undefined || e === "")
-    return true;
-  let desiredDir = e.split("/").filter(e => e !== "");
-  let tempdir = currentDirectory;
-  for(var i = 0; i < desiredDir.length; i++)
-    {
-      if(desiredDir[i] in tempdir && isFolder(desiredDir[i], tempdir))
-        eval("tempdir = tempdir." + desiredDir[i]);
-      else if(desiredDir[i] === '..')
-        eval("tempdir = filestructure" + curDirStr.substr(0, curDirStr.lastIndexOf("/")).split("/").join("."));
-      else
-        return false;
-    }
-    return true;
-}
 
 
 function traverseDir(desiredDir, dir, dirStr)

@@ -45,14 +45,18 @@ a {
 }
 
 
-#terminal {
+#terminal-shell {
   position: absolute;
+  width: 100%;
+}
+
+#terminal {
   top: 5px;
   bottom: 5px;
   width: 100%;
   overflow-y: scroll;
-  
 }
+
 
 
 #debug
@@ -70,11 +74,13 @@ a {
 <body>
 <div id="terminal-wrap">
   <div style="font-size: 0;">
-    <span id="terminal" style="font-size: 12px;">
-        <div id="date" style="font-size: 12px;"></div>
-      <b><font color="lime">chrisclem</font>:~/chrisclem $</b>
-    </span>
-    <font id="cursor">&nbsp;</font>
+    <div id="date" style="font-size: 12px;"></div>
+    <span id="terminal-shell">
+      <span id="terminal" style="font-size: 12px;">
+        <b><font color="lime">chrisclem</font>:~/chrisclem $</b>
+      </span>
+      <font id="cursor">&nbsp;</font>
+   </span>
     </div>
 </div>
 <div id="debug">Debug</div>
@@ -140,12 +146,12 @@ from buggy code)
 */
 
 // parseInt(window.getComputedStyle(document.getElementById("terminal")).fontSize, 10)
-var height1 = document.getElementById("terminal").clientHeight;
+var height1 = document.getElementById("terminal-shell").clientHeight;
 var height = Math.round(document.body.scrollHeight * .5625 / height1) * height1;
 
 document.getElementById("terminal-wrap").style.height = height + "px";
 
-document.getElementById("terminal").style.height = height + "px";
+document.getElementById("terminal-shell").style.height = height + "px";
 
 
 var terminal = document.getElementById("terminal");

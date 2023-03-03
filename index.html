@@ -243,7 +243,7 @@ var tabNum = 0;
 const res = await fetch('https://api.github.com/users/clemmers/repos');
 if (res.ok) {
   const data = await res.json();
-  terminal.innerHTML += JSON.stringify(data, null, 4);
+  addText(JSON.stringify(data, null, 4));
 }
 
 */
@@ -368,7 +368,8 @@ document.onkeydown = function(e) {
     {
       if(input.length > 0)
       {
-        terminal.innerHTML = terminal.innerHTML.substr(0, terminal.innerHTML.length - 1);
+        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 65;
+        terminal.innerHTML = terminal.innerHTML.substr(0, lengthWithoutCursor - 1) + terminal.innerHTML.substring(lengthWithoutCursor);
         input = input.substr(0, input.length - 1);
         if(historyIndex != -1)
         {
@@ -388,21 +389,21 @@ document.onkeydown = function(e) {
         // if(command)
         
         if(command === "pwd")
-          terminal.innerHTML += '<br>' + curDirStr;
+          addText('<br>' + curDirStr);
           
         else if(command === "help")
         {
           let arg = input.split(" ")[1];
           if(arg === '' || arg === undefined)
-            commands.forEach(e => terminal.innerHTML += '<br>' + e[0]);
+            commands.forEach(e => addText('<br>' + e[0]));
           else if(cmnd.includes(arg + ' '))
           {
             let index = cmnd.indexOf(arg + ' ');
-            terminal.innerHTML += '<br>' + commands[index][0] + " - " + commands[index][1];
+            addText('<br>' + commands[index][0] + " - " + commands[index][1]);
           }
           else
           {
-            terminal.innerHTML += '<br> help: no help topics match `' + arg + '\'. Try `help help\'.';
+            addText('<br> help: no help topics match `' + arg + '\'. Try `help help\'.');
           }
         }
         
@@ -425,11 +426,11 @@ document.onkeydown = function(e) {
                 let callCd = traverseDir(desiredDir, currentDirectory, curDirStr);
                 if(callCd === -1)
                 {
-                  terminal.innerHTML += "<br>cd: " + cdArgRaw + ": Not a directory";
+                  addText("<br>cd: " + cdArgRaw + ": Not a directory");
                 }
                 else if(callCd === 1)
                 {
-                 terminal.innerHTML += "<br>cd: " + cdArgRaw + ": No such file or directory";
+                 addText("<br>cd: " + cdArgRaw + ": No such file or directory");
                 }
                 else
                 {
@@ -449,8 +450,8 @@ document.onkeydown = function(e) {
             //if(input.split(" ")[1] === undefined || input.split(" ")[1] === '')
             if(inpt === undefined || inpt === "")
             {
-              terminal.innerHTML += '<br>';
-              Object.keys(currentDirectory).forEach(item => eval("if(isFolder(item, currentDirectory)){terminal.innerHTML += '<b><font color=\"DodgerBlue\">' + item + ' </font></b>';} else{terminal.innerHTML += item + ' ';}"));
+              addText('<br>');
+              Object.keys(currentDirectory).forEach(item => eval("if(isFolder(item, currentDirectory)){addText('<b><font color=\"DodgerBlue\">' + item + ' </font></b>');} else{addText(item + ' ');}"));
               break ls;
             }
             let lsDir = traverseDir(inpt.split("/").filter(e => e !== ""), currentDirectory, curDirStr);
@@ -459,23 +460,23 @@ document.onkeydown = function(e) {
             
             if(typeof lsDir[0] === 'object')
             {
-              terminal.innerHTML += '<br>';
+              addText('<br>');
               
-              Object.keys(lsDir[0]).forEach(item => eval("if(isFolder(item, lsDir[0])){terminal.innerHTML += '<b><font color=\"DodgerBlue\">' + item + ' </font></b>';} else{terminal.innerHTML += item + ' ';}"));
+              Object.keys(lsDir[0]).forEach(item => eval("if(isFolder(item, lsDir[0])){addText('<b><font color=\"DodgerBlue\">' + item + ' </font></b>');} else{addText(item + ' ');}"));
             }
             
             else if(lsDir === -1 && inpt.substr(inpt.length - 1) !== '/')
             {
-              terminal.innerHTML += '<br>' + inpt;
+              addText('<br>' + inpt);
             }
             
             else if (lsDir === 1)
             {
-              terminal.innerHTML += '<br>ls: cannot access '+ input.split(" ")[1] + ': No such file or directory';
+              addText('<br>ls: cannot access '+ input.split(" ")[1] + ': No such file or directory');
             }
             else
             {
-              terminal.innerHTML += '<br>ls: cannot access '+ input.split(" ")[1] + ': Not a directory';
+              addText('<br>ls: cannot access '+ input.split(" ")[1] + ': Not a directory');
             }
             
           }
@@ -492,14 +493,14 @@ document.onkeydown = function(e) {
         
         else if(input !== "")
         {
-          terminal.innerHTML += "<br>Unknown Command: " + input.split(" ")[0];
+          addText("<br>Unknown Command: " + input.split(" ")[0]);
         }
         if(historyIndex > 0)
         {
           history[0] = history[historyIndex];
           // input = history[historyIndex];
         }
-          terminal.innerHTML += "<br><b><font color='lime'>chrisclem</font>:~" + curDirStr + " $</b> "; // Object.keys(currentDirectory)
+          addText("<br><b><font color='lime'>chrisclem</font>:~" + curDirStr + " $</b> "); // Object.keys(currentDirectory)
       }
       if(history[historyIndex] !== "")
         if(history[0] !== "")
@@ -531,9 +532,9 @@ function printCursor(color)
 
 function addText(text)
 {
-  let length = terminal.innerHTML.length - cursor.innerHTML.length - 14;
+  let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 65;
   debug.innerHTML = cursor.innerHTML.length;
-  terminal.innerHTML = terminal.innerHTML.substring(0, length) + '<font style="background-color: black">' + text + '</font>' + terminal.innerHTML.substring(length);
+  terminal.innerHTML = terminal.innerHTML.substring(0, lengthWithoutCursor) + text + terminal.innerHTML.substring(lengthWithoutCursor);
 }
 
 // prints file to terminal
@@ -548,15 +549,15 @@ function print(inpt)
     let fileName = dirArr[dirArr.length - 1];
     dirArr.splice(dirArr.length - 1);
     debug.innerHTML = dirArr;
-    eval("terminal.innerHTML += '<br>' + traverseDir(dirArr, currentDirectory, curDirStr)[0]." + fileName);
+    eval("addText('<br>' + traverseDir(dirArr, currentDirectory, curDirStr)[0]." + fileName + ')');
   }
   else if(catDir === 1)
   {
-    terminal.innerHTML += '<br>cat: ' + inpt + ': No such file or directory';
+    addText('<br>cat: ' + inpt + ': No such file or directory');
    }
   else
   {
-    terminal.innerHTML += '<br>cat: ' + inpt + ': Is a directory';
+    addText('<br>cat: ' + inpt + ': Is a directory');
   }
 }
 
@@ -584,7 +585,7 @@ function checkTab(dir, tabInput, dirContent)
   if(commonLetters !== '')
   {
     fill = commonLetters.substring(tabInput.length);
-    terminal.innerHTML += fill;
+    addText(fill);
     input += fill;
     history[historyIndex] += fill;
   }
@@ -593,9 +594,9 @@ function checkTab(dir, tabInput, dirContent)
     tabNum++;
     if(tabNum > 1)
     {
-      terminal.innerHTML += '<br>';
-      match.forEach(e => terminal.innerHTML += e + ' ');
-      terminal.innerHTML +='<br><b><font color="lime">chrisclem</font>:~' + curDirStr + ' $</b> ' + input;
+      addText('<br>');
+      match.forEach(e => addText(e + ' '));
+      addText('<br><b><font color="lime">chrisclem</font>:~' + curDirStr + ' $</b> ' + input);
     }
   }
 }

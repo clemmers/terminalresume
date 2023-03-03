@@ -315,8 +315,9 @@ document.onkeydown = function(e) {
       e.preventDefault();
       if(historyIndex < history.length - 1 && history.length != 0)
       {
+        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 65;
         historyIndex ++;
-        terminal.innerHTML = terminal.innerHTML.substr(0, terminal.innerHTML.length - input.length) + history[historyIndex];
+        terminal.innerHTML = terminal.innerHTML.substr(0, lengthWithoutCursor - input.length) + history[historyIndex] + terminal.innerHTML.substring(lengthWithoutCursor);
         input = history[historyIndex];
       }
     }
@@ -325,8 +326,9 @@ document.onkeydown = function(e) {
       e.preventDefault();
       if(historyIndex > 0)
       {
+        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 65;
         historyIndex --;
-        terminal.innerHTML = terminal.innerHTML.substr(0, terminal.innerHTML.length - input.length) + history[historyIndex];
+        terminal.innerHTML = terminal.innerHTML.substr(0, lengthWithoutCursor - input.length) + history[historyIndex] + terminal.innerHTML.substring(lengthWithoutCursor);
         input = history[historyIndex];
         
       }

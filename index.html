@@ -380,12 +380,12 @@ document.onkeydown = function(e) {
         
       else if(command === "help")
       {
-        let arg = input.split(" ")[1] + " ";
+        let arg = input.split(" ")[1];
         if(arg === '' || arg === undefined)
           commands.forEach(e => terminal.innerHTML += '<br>' + e[0]);
-        else if(cmnd.includes(arg))
+        else if(cmnd.includes(arg + ' '))
         {
-          let index = cmnd.indexOf(arg);
+          let index = cmnd.indexOf(arg + ' ');
           terminal.innerHTML += '<br>' + commands[index][0] + " - " + commands[index][1];
         }
         else

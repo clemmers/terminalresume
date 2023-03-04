@@ -134,6 +134,8 @@ from buggy code)
 
 - tab autofill prints not in alphabetical order
 
+- once anything is inputted into terminal, can no longer unfocus
+
 */
 
 // parseInt(window.getComputedStyle(document.getElementById("terminal")).fontSize, 10)
@@ -151,13 +153,17 @@ var terminalWrap = document.getElementById("terminal-wrap");
 var cursor = document.getElementById("cursor");
 
 
-var isClickedIn = true;
+var isClickedIn = false;
 
-document.body.addEventListener('click', function bodyClick()
+bodyClick();
+
+function bodyClick()
 {
   cursor.style.backgroundColor = 'black';
   isClickedIn = false;
-});
+}
+
+document.body.addEventListener('click', bodyClick());
 
 terminalWrap.addEventListener('click', function terminalClick(e)
 {
@@ -383,7 +389,8 @@ document.onkeydown = function(e) {
     {
       if(input === "clear")
       {
-        terminal.innerHTML = "<b><font color='lime'>chrisclem</font>:~" + curDirStr + " $</b> ";
+        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 65;
+        terminal.innerHTML = "<b><font color='lime'>chrisclem</font>:~" + curDirStr + " $</b> " + terminal.innerHTML.substring(lengthWithoutCursor);
       }
       else
       {

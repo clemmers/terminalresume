@@ -136,6 +136,8 @@ from buggy code)
 
 - once anything is inputted into terminal, can no longer unfocus
 
+- directories printing to terminal are not conventionally spaced and sorted
+
 */
 
 // parseInt(window.getComputedStyle(document.getElementById("terminal")).fontSize, 10)
@@ -204,31 +206,36 @@ const fileStructure =
       projects: 
       {
         github: '<a href="https://github.com/clemmers"><font style="font-size: 12px; line-height: 0px">&#128279;</font> <b>GitHub/clemmers</a></b>',
-        project1:
-        {
-          test: 'blahblah'
-        }
       },
       skills: '- Fast Learner<br>- Complex Problem Solving<br>- Advanced Analytical Thinking<br>'
             + '- Teamwork<br>- Agile Development Methodology<br>- Unix Shell<br>'
             + '- Code Analysis and Development<br>- Programing Languages: Java, JavaScript, Python'
-    },
-    file1a : {
-    chrisclem : {
-        folder1: {
-          coolfile: 'yuhhh',
-          foldie: {
-            filebile: 'test'
-          }
-        },
-        folder2: {
-          coolfile: 'yuhhh but different'
-        },
-        file: 'data!!! i love data i think it is very possible that i may become addicted to drugs in the future',
-        funfile: 'yoyo'
     }
-}
 };
+
+var request = new XMLHttpRequest();
+
+
+request.open('GET', 'https://api.github.com/users/clemmers/repos', true)
+
+request.onload = function () {
+  var data = JSON.parse(this.response);
+  data.forEach(function(e){
+    
+    let description = "<a href='" + e.html_url + "'><font style='font-size: 12px; line-height: 0px'>&#128279;</font><b>" + e.full_name + "</b></a><br>"
+  + e.description
+  + "<br>Language: " + e.language
+  + "<br><font style='font-size: 12px; line-height: 0px'>&#11088;</font>: " + e.stargazers_count
+  + "<br><font style='font-size: 12px; line-height: 0px'>&#128064;</font>: " + e.watchers_count
+  
+    eval('Object.assign(fileStructure.chrisclem.projects, {"' + e.name.replace(/-/g, '_') + '" : "' + description + '"});');
+    
+  });
+  console.log(fileStructure);
+};
+
+request.send();
+
 
 
 var currentDirectory = fileStructure.chrisclem;

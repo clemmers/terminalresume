@@ -140,9 +140,20 @@ from buggy code)
 
 */
 
+if (navigator.userAgent.match(/Android/i)
+         || navigator.userAgent.match(/webOS/i)
+         || navigator.userAgent.match(/iPhone/i)
+         || navigator.userAgent.match(/iPad/i)
+         || navigator.userAgent.match(/iPod/i)
+         || navigator.userAgent.match(/BlackBerry/i)
+         || navigator.userAgent.match(/Windows Phone/i)) {
+            document.location = "mobile.html";
+         }
+
 // parseInt(window.getComputedStyle(document.getElementById("terminal")).fontSize, 10)
 var height1 = document.getElementById("terminal-wrap").clientHeight;
 var height = Math.round(document.body.scrollHeight * .5625 / height1) * height1;
+var width = document.getElementById("terminal").clientWidth;
 
 document.getElementById("terminal-wrap").style.height = height + "px";
 
@@ -197,19 +208,22 @@ const fileStructure =
 {
     chrisclem : 
     {
+      contact: '<font style="font-size: 6px"><br></font><b><a href="mailto: chrisclem244@yahoo.com"><font style="font-size: 12px; line-height: 0px">&#128231;</font> chrisclem244@yahoo.com</a><br>'
+                + '<font style="font-size: 6px"><br></font><font style="font-size: 12px; line-height: 0px">&#128222;</font> (818)497-1045<br><font style="font-size: 6px"><br></font>'
+                + '<a href="https://github.com/clemmers"><img src="github-mark-white.svg" height="12px" width="relative"> clemmers</a></b><font style="font-size: 6px"><br></font>',
       education: '<b style="color: DodgerBlue"><a target="_blank" href="https://goo.gl/maps/C6VW1p2zdhyGBFXc8">Crescenta Valley High School</a> (August 2020 to Current)</b>'
-               + '<br>info about my academic achievements<br>interesting info',
+                + '<br>info about my academic achievements<br>interesting info',
       employment: '<b>Mitch Clem Management<br><a target="_blank" href="https://goo.gl/maps/HQi3KsBrJepPHcN66"><font style="font-size: 12px; line-height: 0px">&#128205</font> Glendale, CA</a></b>'
                 + '<br>Social Media Presence Manager (March 2020 to Current)<br> Improved page content,'
                 + ' keyword releveancy, and branding to achieve search engine optimization goals<br>'
                 + ' Discussed site requirements with client to produce actionable development plans and budgets',
       projects: 
       {
-        github: '<a target="_blank" href="https://github.com/clemmers"><font style="font-size: 12px; line-height: 0px">&#128279;</font> <b>GitHub/clemmers</a></b>',
+        // github: '<a target="_blank" href="https://github.com/clemmers"><font style="font-size: 12px; line-height: 0px">&#128279;</font> <b>GitHub/clemmers</a></b>',
       },
       skills: '- Fast Learner<br>- Complex Problem Solving<br>- Advanced Analytical Thinking<br>'
-            + '- Teamwork<br>- Agile Development Methodology<br>- Unix Shell<br>'
-            + '- Code Analysis and Development<br>- Programing Languages: Java, JavaScript, Python'
+              + '- Teamwork<br>- Agile Development Methodology<br>- Unix Shell<br>'
+              + '- Code Analysis and Development<br>- Programing Languages: Java, JavaScript, Python'
     }
 };
 
@@ -223,10 +237,10 @@ request.onload = function () {
   data.forEach(function(e){
     
     let description = "<a target='_blank' href='" + e.html_url + "'><font style='font-size: 12px; line-height: 0px'>&#128279;</font><b>" + e.full_name + "</b></a><br>"
-  + e.description
-  + "<br>Made in " + e.language
-  + "<br><font style='font-size: 12px; line-height: 0px'>&#11088;</font>: " + e.stargazers_count
-  + "<br><font style='font-size: 12px; line-height: 0px'>&#128064;</font>: " + e.watchers_count
+                      + e.description
+                      + "<br>Made in " + e.language
+                      + "<br><font style='font-size: 12px; line-height: 0px'>&#11088;</font>: " + e.stargazers_count
+                      + "<br><font style='font-size: 12px; line-height: 0px'>&#128064;</font>: " + e.watchers_count;
   
     eval('Object.assign(fileStructure.chrisclem.projects, {"' + e.name.replace(/-/g, '_') + '" : "' + description + '"});');
     

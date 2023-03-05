@@ -197,15 +197,15 @@ const fileStructure =
 {
     chrisclem : 
     {
-      education: '<b style="color: DodgerBlue"><a href="https://goo.gl/maps/C6VW1p2zdhyGBFXc8">Crescenta Valley High School</a> (August 2020 to Current)</b>'
+      education: '<b style="color: DodgerBlue"><a target="_blank" href="https://goo.gl/maps/C6VW1p2zdhyGBFXc8">Crescenta Valley High School</a> (August 2020 to Current)</b>'
                + '<br>info about my academic achievements<br>interesting info',
-      employment: '<b>Mitch Clem Management<br><a href="https://goo.gl/maps/HQi3KsBrJepPHcN66"><font style="font-size: 12px; line-height: 0px">&#128205</font> Glendale, CA</a></b>'
+      employment: '<b>Mitch Clem Management<br><a target="_blank" href="https://goo.gl/maps/HQi3KsBrJepPHcN66"><font style="font-size: 12px; line-height: 0px">&#128205</font> Glendale, CA</a></b>'
                 + '<br>Social Media Presence Manager (March 2020 to Current)<br> Improved page content,'
                 + ' keyword releveancy, and branding to achieve search engine optimization goals<br>'
                 + ' Discussed site requirements with client to produce actionable development plans and budgets',
       projects: 
       {
-        github: '<a href="https://github.com/clemmers"><font style="font-size: 12px; line-height: 0px">&#128279;</font> <b>GitHub/clemmers</a></b>',
+        github: '<a target="_blank" href="https://github.com/clemmers"><font style="font-size: 12px; line-height: 0px">&#128279;</font> <b>GitHub/clemmers</a></b>',
       },
       skills: '- Fast Learner<br>- Complex Problem Solving<br>- Advanced Analytical Thinking<br>'
             + '- Teamwork<br>- Agile Development Methodology<br>- Unix Shell<br>'
@@ -222,9 +222,9 @@ request.onload = function () {
   var data = JSON.parse(this.response);
   data.forEach(function(e){
     
-    let description = "<a href='" + e.html_url + "'><font style='font-size: 12px; line-height: 0px'>&#128279;</font><b>" + e.full_name + "</b></a><br>"
+    let description = "<a target='_blank' href='" + e.html_url + "'><font style='font-size: 12px; line-height: 0px'>&#128279;</font><b>" + e.full_name + "</b></a><br>"
   + e.description
-  + "<br>Language: " + e.language
+  + "<br>Made in " + e.language
   + "<br><font style='font-size: 12px; line-height: 0px'>&#11088;</font>: " + e.stargazers_count
   + "<br><font style='font-size: 12px; line-height: 0px'>&#128064;</font>: " + e.watchers_count
   

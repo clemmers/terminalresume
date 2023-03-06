@@ -52,15 +52,6 @@ a {
 
 
 
-#debug
-{
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  color: red;
-  text-align: center;
-}
 
 </style>
 </head>
@@ -74,9 +65,8 @@ a {
       </span>
     </div>
 </div>
-<div id="debug">Debug</div>
+
 <!---->
-<iframe id="my_iframe" style="display:none;"></iframe>
 <script>
 /*
 known issues in function besides basic developmental issues rooted in lack of intended development
@@ -140,6 +130,9 @@ from buggy code)
 
 */
 
+var cursorCharacter;
+var prevCharacter = '';
+
 if (navigator.userAgent.match(/Android/i)
          || navigator.userAgent.match(/webOS/i)
          || navigator.userAgent.match(/iPhone/i)
@@ -189,7 +182,7 @@ var input = "";
 const history = [""];
 var historyIndex = 0;
 
-var debug = document.getElementById("debug");
+
 
 
 const commands = [
@@ -344,7 +337,7 @@ document.onkeydown = function(e) {
       e.preventDefault();
       if(historyIndex < history.length - 1 && history.length != 0)
       {
-        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 65;
+        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 65 - cursorPositionLeft;
         historyIndex ++;
         terminal.innerHTML = terminal.innerHTML.substr(0, lengthWithoutCursor - input.length) + history[historyIndex] + terminal.innerHTML.substring(lengthWithoutCursor);
         input = history[historyIndex];
@@ -355,7 +348,7 @@ document.onkeydown = function(e) {
       e.preventDefault();
       if(historyIndex > 0)
       {
-        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 65;
+        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 65 - cursorPositionLeft;
         historyIndex --;
         terminal.innerHTML = terminal.innerHTML.substr(0, lengthWithoutCursor - input.length) + history[historyIndex] + terminal.innerHTML.substring(lengthWithoutCursor);
         input = history[historyIndex];
@@ -374,17 +367,20 @@ document.onkeydown = function(e) {
     
     */
     
-  /*  
-    
+
+    /*
     if(key === "ArrowLeft")
     {
       cursorPositionLeft ++;
-      cursor.innerHTML = "";
-      terminal.innerHTML = terminal.innerHTML.substr(0, terminal.innerHTML.length  - cursorPositionLeft) + "<font id='cursor'>&nbsp;</font>" + terminal.innerHTML.substr(terminal.innerHTML.length - cursorPositionLeft + 1);
-      cursor = document.getElementById("cursor");
+      let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 65 - cursorPositionLeft;
+      cursorCharacter = terminal.innerHTML.substr(lengthWithoutCursor - 1, 1);
+      
+      terminal.innerHTML = terminal.innerHTML.substring(0, lengthWithoutCursor - 1) + terminal.innerHTML.substring(lengthWithoutCursor + 1, lengthWithoutCursor + cursor.innerHTML.length + 65) //+ prevCharacter +  terminal.innerHTML.substr(terminal.innerHTML.length - cursorPositionLeft); //+ prevCharacter; //terminal.innerHTML.substr(lengthWithoutCursor - cursorPositionLeft + 2, 1);
+      prevCharacter = cursorCharacter;
     }
     
-  */  
+    */
+  
     
     if(key.length === 1)
     {
@@ -399,7 +395,7 @@ document.onkeydown = function(e) {
     {
       if(input.length > 0)
       {
-        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 65;
+        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 65 - cursorPositionLeft;
         terminal.innerHTML = terminal.innerHTML.substr(0, lengthWithoutCursor - 1) + terminal.innerHTML.substring(lengthWithoutCursor);
         input = input.substr(0, input.length - 1);
         if(historyIndex != -1)
@@ -427,7 +423,7 @@ function enterPress(enterInput)
 {
   if(enterInput === "clear")
       {
-        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 65;
+        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 65 - cursorPositionLeft;
         terminal.innerHTML = "<b><font color='lime'>chrisclem</font>:~" + curDirStr + " $</b> " + terminal.innerHTML.substring(lengthWithoutCursor);
       }
       else
@@ -552,8 +548,6 @@ function ls(inpt)
             }
             let lsDir = traverseDir(inpt.split("/").filter(e => e !== ""), currentDirectory, curDirStr);
             
-            debug.innerHTML = lsDir + typeof lsDir[0];
-            
             if(typeof lsDir[0] === 'object')
             {
               addText('<br>');
@@ -649,8 +643,7 @@ function printCursor(color)
 
 function addText(text)
 {
-  let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 65;
-  debug.innerHTML = cursor.innerHTML.length;
+  let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 65 - cursorPositionLeft;
   terminal.innerHTML = terminal.innerHTML.substring(0, lengthWithoutCursor) + text + terminal.innerHTML.substring(lengthWithoutCursor);
 }
 
@@ -665,7 +658,6 @@ function print(inpt)
   {
     let fileName = dirArr[dirArr.length - 1];
     dirArr.splice(dirArr.length - 1);
-    debug.innerHTML = dirArr;
     eval("addText('<br>' + traverseDir(dirArr, currentDirectory, curDirStr)[0]." + fileName + ')');
   }
   else if(catDir === 1)
@@ -697,7 +689,6 @@ function checkTab(dir, tabInput, dirContent)
   dirContent.forEach(function(e) {if(e.indexOf(tabInput) === 0) match.push(e)});
   
   let commonLetters = stringMatch(match);
-  debug.innerHTML = commonLetters;
   let fill = '';
   if(commonLetters !== '')
   {
@@ -738,7 +729,6 @@ function traverseDir(desiredDir, dir, dirStr)
     else if(dirCheck === '..')
           {
             dirStr = dirStr.substr(0, dirStr.lastIndexOf("/"));
-            debug.innerHTML = dirStr.split("/").join(".");
             eval("dir = fileStructure" + dirStr.split("/").join("."));
           }
     // Not a directory

@@ -76,7 +76,7 @@ a {
 </div>
 <div id="debug">Debug</div>
 <!---->
-
+<iframe id="my_iframe" style="display:none;"></iframe>
 <script>
 /*
 known issues in function besides basic developmental issues rooted in lack of intended development
@@ -200,7 +200,8 @@ const commands = [
 ['ls [FILE]', 'List directory contents.'],
 ['pwd', 'Print the name of the current working directory.'],
 ['resume', 'Prints resume to terminal.'],
-['projects', 'Prints some of my favorite projects.']
+['projects', 'Prints some of my favorite projects.'],
+['download', 'Downloads the latest uploaded version of resume (03.05.23).']
 ];
 
 const cmnd = []; 
@@ -467,6 +468,10 @@ function enterPress(enterInput)
           projects();
           break;
           
+        case 'download':
+          download();
+          break;
+          
         default:
           addText("<br>Unknown Command: " + enterInput.split(" ")[0]);
           newLine();
@@ -489,6 +494,18 @@ function newLine()
 {
   addText("<br><b><font color='lime'>chrisclem</font>:~" + curDirStr + " $</b> ");
 }
+
+function download()
+{
+    var link = document.createElement("a");
+    link.setAttribute('download', 'resume_chris_clem.pdf');
+    link.href = "resume_chris_clem.pdf";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    newLine();
+}
+
 function cd(arg)
 {
   if(arg === undefined || arg === "")

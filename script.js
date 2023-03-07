@@ -518,6 +518,7 @@ function help(arg)
 }
 
 // note: method of traversing to correct directory only works in linear file structure
+// note: now it works from anywhere! bc of locateDirectory function 😍
 function resume()
 {
   newLine();
@@ -549,6 +550,13 @@ function locateDirectory(desiredDir, currentWorkingDirectoryStr)
   let dir;
   let desiredDirArr = desiredDir.split('/').filter(e => e !== "");
   let currDirArr = currentWorkingDirectoryStr.split('/').filter(e => e !== "");
+  // this is really smart good job dude
+  // thank you
+  // i just want someone to love me yk man
+  // i feel you broski but this is not really the time to get into this
+  // then when is the time? when can i express myself ever if not now? can you hear my singing? can you feel my every escaping breath?
+  // what the fuck are you talking about
+  // the government has been giving the homeless population supplements containing methamphetamine in order to supress their cries
   let lastCommonIndex = -1;
   // sets lastCommonIndex as the level of the lowest shared directory
   // ex. if desiredDirArr = ['home', 'folder1', 'folder2', 'subfolder3'] and currDirArr = ['home', 'folder1', 'jerry', 'crayola']
@@ -579,6 +587,7 @@ function printCursor(color)
 
 */
 
+// i really dislike that i have to do it this way
 function addText(text)
 {
   let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 67 - cursorPositionLeft;

@@ -258,11 +258,15 @@ document.onkeydown = function(e) {
         if(desiredDir !== undefined)
         {
             let dir;
-            if(desiredDir.indexOf("/") !== -1)
+            let lastSlashIndex = desiredDir.lastIndexOf('/');
+            if(lastSlashIndex !== -1)
             {
-              desiredDir = desiredDir.split("/");
-              dir = traverseDir(desiredDir.splice(0, desiredDir.length - 1), currentDirectory, curDirStr)[0];
-              desiredDir = desiredDir[0];
+              
+              // desiredDir = desiredDir.split("/");
+              // dir = traverseDir(desiredDir.splice(0, desiredDir.length - 1), currentDirectory, curDirStr)[0];
+              dir = traverseDir(desiredDir.substring(0, lastSlashIndex + 1), currentDirectory, curDirStr)[0];
+              desiredDir = desiredDir.substring(lastSlashIndex + 1);
+              
             }
             else
               dir = currentDirectory;
@@ -457,14 +461,16 @@ function mkdir(directories)
 {
   if(directories[0] === "" || directories[0] === undefined)
   {
-    addText("<br>mkdir: missing operand<br> Try 'help mkdir' for more information");
+    addText("<br>mkdir: missing operand<br>Try 'help mkdir' for more information");
     newLine();
     return;
   }
   directories.forEach(function(e)
     {
-      let test = e.split("/").filter(e => e !== "");
-      let dir = traverseDir(test.splice(0, test.length - 1), currentDirectory, curDirStr);
+      let lastSlashIndex = e.lastIndexOf("/");
+      let name = e.substring(lastSlashIndex + 1);
+      let dir = [];
+        dir = traverseDir(e.substring(0, lastSlashIndex + 1), currentDirectory, curDirStr);
       switch(dir)
       {
         case -1:
@@ -474,8 +480,9 @@ function mkdir(directories)
           addText("<br>mkdir: `" + e + "': No such file or directory");
           break;
         default:
-          if(!Object.keys(dir[0]).includes(test[0]))
-            dir[0][`${test[0]}`] = {};
+          
+          if(!Object.keys(dir[0]).includes(e.substring(lastSlashIndex)))
+            dir[0][`${name}`] = {};
           else
             addText("<br>mkdir: cannot create directory `" + e + "': File exists");
       }
@@ -504,21 +511,21 @@ function cd(arg)
   }
   else
   {
-    var desiredDir = arg.split("/").filter(e => e !== ""); // "cd test/test1/test2/" = [ 'test', 'test1', 'test2' ]
-      let callCd = traverseDir(desiredDir, currentDirectory, curDirStr);
-      switch(callCd)
-      {
-        case -1:
-          addText("<br>cd: " + arg + ": Not a directory");
-          break;
-        
-        case 1:
-          addText("<br>cd: " + arg + ": No such file or directory");
-          break;
-        default:
-          currentDirectory = callCd[0];
-          curDirStr = callCd[1];
-      }
+  // var desiredDir = arg.split("/").filter(e => e !== ""); // "cd test/test1/test2/" = [ 'test', 'test1', 'test2' ]
+    let callCd = traverseDir(arg, currentDirectory, curDirStr);
+    switch(callCd)
+    {
+      case -1:
+        addText("<br>cd: " + arg + ": Not a directory");
+        break;
+      
+      case 1:
+        addText("<br>cd: " + arg + ": No such file or directory");
+        break;
+      default:
+        currentDirectory = callCd[0];
+        curDirStr = callCd[1];
+    }
   }
   newLine();
 }
@@ -540,11 +547,13 @@ function ls(inpt)
       return;
     }
     addText('<br>');
-    Object.keys(currentDirectory).forEach(function(item) { if(isFolder(item, currentDirectory)) addText('<b><font color=\"DodgerBlue\">' + item + ' </font></b>'); else addText(item + ' ');});
+    //let arr = Object.keys(currentDirectory);
+    Object.keys(currentDirectory).sort().forEach(function(item) { if(isFolder(item, currentDirectory)) addText('<b><font color=\"DodgerBlue\">' + item + ' </font></b>'); else addText(item + ' ');});
     newLine();
     return;
   }
-  let lsDir = traverseDir(inpt.split("/").filter(e => e !== ""), currentDirectory, curDirStr);
+  //let lsDir = traverseDir(inpt.split("/").filter(e => e !== ""), currentDirectory, curDirStr);
+    let lsDir = traverseDir(inpt, currentDirectory, curDirStr);
   
   if(typeof lsDir[0] === 'object')
   {
@@ -554,7 +563,7 @@ function ls(inpt)
       return;
     }
     addText('<br>');
-    Object.keys(lsDir[0]).forEach(function(item) {if(isFolder(item, lsDir[0])) addText('<b><font color=\"DodgerBlue\">' + item + ' </font></b>'); else addText(item + ' ');});
+    Object.keys(lsDir[0]).sort().forEach(function(item) {if(isFolder(item, lsDir[0])) addText('<b><font color=\"DodgerBlue\">' + item + ' </font></b>'); else addText(item + ' ');});
   }
   
   else if(lsDir === -1 && inpt.substr(inpt.length - 1) !== '/')
@@ -615,6 +624,10 @@ function projects()
   runCommand('cat terminalresume ');
 }
 
+
+
+// uhh so apparently u can just start path with a / and go straight to the desired dir!!! whoops
+// so this function is bascialyl like useless but wtv its still cool
 // ex. locateDirectory('/chrisclem/projects', '/chrisclem') returns 'projects/'
 function locateDirectory(desiredDir, currentWorkingDirectoryStr)
 {
@@ -659,7 +672,7 @@ function printCursor(color)
 
 */
 
-// i really dislike that i have to do it this way
+// i really dislike that i do it this way
 function addText(text)
 {
   let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 67 - cursorPositionLeft;
@@ -669,16 +682,14 @@ function addText(text)
 // prints file to terminal
 function print(inpt)
 {
-  let dirArr = inpt.split("/").filter(e => e !== "");
         
-  let catDir = traverseDir(dirArr, currentDirectory, curDirStr);
-  
+  let catDir = traverseDir(inpt, currentDirectory, curDirStr);
   switch(catDir)
   {
     case -1:
-      let fileName = dirArr[dirArr.length - 1];
-      dirArr.splice(dirArr.length - 1);
-      addText('<br>' + traverseDir(dirArr, currentDirectory, curDirStr)[0][`${fileName}`]);
+      let lastSlashIndex = inpt.lastIndexOf("/");
+      let fileName = inpt.substring(lastSlashIndex + 1);
+      addText('<br>' + traverseDir(inpt.substring(0, lastSlashIndex), currentDirectory, curDirStr)[0][`${fileName}`]);
       break;
     
   case 1:
@@ -739,6 +750,16 @@ function isFolder(e, dir)
 
 function traverseDir(desiredDir, dir, dirStr)
 {
+  if(desiredDir.substring(0, 1) === '/')
+  {
+    if(desiredDir.length === 1)
+      return [fileStructure, ''];
+    dir = fileStructure;
+    dirStr = '';
+  }
+  if(desiredDir === "" || desiredDir === undefined)
+    return [dir, dirStr];
+  desiredDir = desiredDir.split("/").filter(e => e !== "");
   for(let i = 0; i < desiredDir.length; i++)
   {
     let dirCheck = desiredDir[i];
@@ -748,14 +769,19 @@ function traverseDir(desiredDir, dir, dirStr)
             dirStr += "/" + dirCheck;
           }
     else if(dirCheck === '..')
-          {
-            dir = fileStructure;
-            dirStr = dirStr.substr(0, dirStr.lastIndexOf("/"));
-            dirStr.split("/").filter(e => e !== "").forEach(e => dir = dir[`${e}`]);
-            
-            // no longer works after mkdir was added, allowing possibility of folders with names containing numeric literals
-            // eval("dir = fileStructure" + dirStr.split("/").join("."));
-          }
+    {
+      dir = fileStructure;
+      dirStr = dirStr.substr(0, dirStr.lastIndexOf("/"));
+      dirStr.split("/").filter(e => e !== "").forEach(e => dir = dir[`${e}`]);
+      
+      // no longer works after mkdir was added, allowing possibility of folders with names containing numeric literals
+      // eval("dir = fileStructure" + dirStr.split("/").join("."));
+    }
+    else if(dirCheck=== '~')
+    {
+      dir = fileStructure["chrisclem"];
+      dirStr = "/chrisclem";
+    }
     // Not a directory
     else if(dirCheck in dir && i === desiredDir.length - 1)
     {

@@ -116,15 +116,16 @@ var historyIndex = 0;
 
 
 const commands = [
-['cat [FILE]', 'Concatenate files and print on the standard output'],
-['cd [dir]', 'Change the shell working directory'],
-['clear', 'Clear the terminal screen'],
-['download', 'Downloads the latest uploaded version of resume (03.05.23)'],
-['help [command]', 'Display information about builtin commands'],
-['ls [FILE]', 'List directory contents'],
-['pwd', 'Print the name of the current working directory'],
-['resume', 'Prints resume to terminal'],
-['projects', 'Prints some of my favorite projects']
+['cat [FILE]', 'concatenate files and print on the standard output'],
+['cd [dir]', 'change the shell working directory'],
+['clear', 'clear the terminal screen'],
+['download', 'downloads the latest uploaded version of resume (03.05.23)'],
+['help [command]', 'display information about builtin commands'],
+['ls [FILE]', 'list directory contents'],
+['mkdir [DIRECTORIES]', 'make directories'],
+['pwd', 'print the name of the current working directory'],
+['resume', 'prints resume to terminal'],
+['projects', 'prints some of my favorite projects']
 ];
 
 const cmnd = []; 
@@ -150,6 +151,26 @@ const fileStructure =
       skills: '- Fast Learner<br>- Complex Problem Solving<br>- Advanced Analytical Thinking<br>'
               + '- Teamwork<br>- Agile Development Methodology<br>- Unix Shell<br>'
               + '- Code Analysis and Development<br>- Programing Languages: Java, JavaScript, Python'
+    },
+    chris1 : 
+    {
+      folder1 : 
+      {
+        subfolder1 : 
+        {
+          coolieboolie : 'wow!'
+        }
+      },
+      folder2:
+      {
+        subfolder1 :
+        {
+          coolfolder : 
+          {
+            yippie : 'yippie!!!'
+          }
+        }
+      }
     }
 };
 
@@ -167,8 +188,9 @@ request.onload = function () {
                       + "<br>Made in " + e.language
                       + "<br><font style='font-size: 12px; line-height: 0px'>&#11088;</font>: " + e.stargazers_count
                       + "<br><font style='font-size: 12px; line-height: 0px'>&#128064;</font>: " + e.watchers_count;
-  
-    eval('Object.assign(fileStructure.chrisclem.projects, {"' + e.name.replace(/-/g, '_') + '" : "' + description + '"});');
+    
+    fileStructure["chrisclem"]["projects"][`${e.name}`] = description;
+    //eval('Object.assign(fileStructure.chrisclem.projects, {"' + e.name.replace(/-/g, '_') + '" : "' + description + '"});');
     
   });
   console.log(fileStructure);
@@ -247,7 +269,7 @@ document.onkeydown = function(e) {
             let dirContent = [];
             switch(input.split(" ")[0])
             {
-            case "cd" :
+            case "cd" : case 'mkdir' :
               Object.keys(dir).forEach(function(e) {if(isFolder(e, dir))dirContent.push(e + '/')});
               break;
             case "help" : 
@@ -398,6 +420,16 @@ function enterPress(enterInput)
           download();
           break;
           
+        case 'mkdir':
+          mkdir(enterInput.split(" ").slice(1));
+          break;
+
+        // \/ important \/
+        case 'wilbur':
+          addText('<br>wilbur <font style="font-size: 12px; line-height: 0px">&#128525;&#129409;</font>');
+          newLine();
+          break;
+          
         default:
           addText("<br>Unknown Command: " + enterInput.split(" ")[0]);
           newLine();
@@ -419,6 +451,37 @@ function enterPress(enterInput)
 function newLine()
 {
   addText("<br><b><font color='lime'>chrisclem</font>:~" + curDirStr + " $</b> ");
+}
+
+function mkdir(directories)
+{
+  if(directories[0] === "" || directories[0] === undefined)
+  {
+    addText("<br>mkdir: missing operand<br> Try 'help mkdir' for more information");
+    newLine();
+    return;
+  }
+  directories.forEach(function(e)
+    {
+      let test = e.split("/").filter(e => e !== "");
+      let dir = traverseDir(test.splice(0, test.length - 1), currentDirectory, curDirStr);
+      switch(dir)
+      {
+        case -1:
+          addText("<br>mkdir: `" + e + "': Not a directory");
+          break;
+        case 1:
+          addText("<br>mkdir: `" + e + "': No such file or directory");
+          break;
+        default:
+          if(!Object.keys(dir[0]).includes(test[0]))
+            dir[0][`${test[0]}`] = {};
+          else
+            addText("<br>mkdir: cannot create directory `" + e + "': File exists");
+      }
+    });
+    console.log(currentDirectory);
+  newLine();
 }
 
 function download()
@@ -443,19 +506,19 @@ function cd(arg)
   {
     var desiredDir = arg.split("/").filter(e => e !== ""); // "cd test/test1/test2/" = [ 'test', 'test1', 'test2' ]
       let callCd = traverseDir(desiredDir, currentDirectory, curDirStr);
-      if(callCd === -1)
+      switch(callCd)
       {
-        addText("<br>cd: " + arg + ": Not a directory");
+        case -1:
+          addText("<br>cd: " + arg + ": Not a directory");
+          break;
+        
+        case 1:
+          addText("<br>cd: " + arg + ": No such file or directory");
+          break;
+        default:
+          currentDirectory = callCd[0];
+          curDirStr = callCd[1];
       }
-      else if(callCd === 1)
-      {
-       addText("<br>cd: " + arg + ": No such file or directory");
-      }
-      else
-      {
-        currentDirectory = callCd[0];
-        curDirStr = callCd[1];
-       }
   }
   newLine();
 }
@@ -469,36 +532,45 @@ function cat(arg)
 
 function ls(inpt)
 {
-            if(inpt === undefined || inpt === "")
-            {
-              addText('<br>');
-              Object.keys(currentDirectory).forEach(item => eval("if(isFolder(item, currentDirectory)){addText('<b><font color=\"DodgerBlue\">' + item + ' </font></b>');} else{addText(item + ' ');}"));
-              newLine();
-              return;
-            }
-            let lsDir = traverseDir(inpt.split("/").filter(e => e !== ""), currentDirectory, curDirStr);
-            
-            if(typeof lsDir[0] === 'object')
-            {
-              addText('<br>');
-              
-              Object.keys(lsDir[0]).forEach(item => eval("if(isFolder(item, lsDir[0])){addText('<b><font color=\"DodgerBlue\">' + item + ' </font></b>');} else{addText(item + ' ');}"));
-            }
-            
-            else if(lsDir === -1 && inpt.substr(inpt.length - 1) !== '/')
-            {
-              addText('<br>' + inpt);
-            }
-            
-            else if (lsDir === 1)
-            {
-              addText('<br>ls: cannot access '+ inpt + ': No such file or directory');
-            }
-            else
-            {
-              addText('<br>ls: cannot access '+ inpt + ': Not a directory');
-            }
-            newLine();
+  if(inpt === undefined || inpt === "")
+  {
+    if(Object.keys(currentDirectory)[0] === undefined)
+    {
+      newLine();
+      return;
+    }
+    addText('<br>');
+    Object.keys(currentDirectory).forEach(function(item) { if(isFolder(item, currentDirectory)) addText('<b><font color=\"DodgerBlue\">' + item + ' </font></b>'); else addText(item + ' ');});
+    newLine();
+    return;
+  }
+  let lsDir = traverseDir(inpt.split("/").filter(e => e !== ""), currentDirectory, curDirStr);
+  
+  if(typeof lsDir[0] === 'object')
+  {
+    if(Object.keys(lsDir[0])[0] === undefined)
+    {
+      newLine();
+      return;
+    }
+    addText('<br>');
+    Object.keys(lsDir[0]).forEach(function(item) {if(isFolder(item, lsDir[0])) addText('<b><font color=\"DodgerBlue\">' + item + ' </font></b>'); else addText(item + ' ');});
+  }
+  
+  else if(lsDir === -1 && inpt.substr(inpt.length - 1) !== '/')
+  {
+    addText('<br>' + inpt);
+  }
+  
+  else if (lsDir === 1)
+  {
+    addText('<br>ls: cannot access '+ inpt + ': No such file or directory');
+  }
+  else
+  {
+    addText('<br>ls: cannot access '+ inpt + ': Not a directory');
+  }
+  newLine();
 }
 
 function help(arg)
@@ -537,9 +609,9 @@ function projects()
   newLine();
   if(curDirStr !== '/chrisclem/projects')
     runCommand('cd ' + locateDirectory('/chrisclem/projects', curDirStr));
-  runCommand('cat anti_league_discordbot ');
-  runCommand('cat conways_game_of_life ');
-  runCommand('cat valorant_hack ');
+  runCommand('cat anti-league-discordbot ');
+  runCommand('cat conways-game-of-life ');
+  runCommand('cat valorant-hack ');
   runCommand('cat terminalresume ');
 }
 
@@ -601,19 +673,21 @@ function print(inpt)
         
   let catDir = traverseDir(dirArr, currentDirectory, curDirStr);
   
-  if(catDir === -1)
+  switch(catDir)
   {
-    let fileName = dirArr[dirArr.length - 1];
-    dirArr.splice(dirArr.length - 1);
-    eval("addText('<br>' + traverseDir(dirArr, currentDirectory, curDirStr)[0]." + fileName + ')');
-  }
-  else if(catDir === 1)
-  {
+    case -1:
+      let fileName = dirArr[dirArr.length - 1];
+      dirArr.splice(dirArr.length - 1);
+      addText('<br>' + traverseDir(dirArr, currentDirectory, curDirStr)[0][`${fileName}`]);
+      break;
+    
+  case 1:
     addText('<br>cat: ' + inpt + ': No such file or directory');
-   }
-  else
-  {
+    break;
+    
+  default:
     addText('<br>cat: ' + inpt + ': Is a directory');
+  
   }
 }
 
@@ -658,7 +732,7 @@ function checkTab(dir, tabInput, dirContent)
 
 function isFolder(e, dir)
 {
-  return eval("typeof dir." + e + " === 'object'");
+  return typeof dir[`${e}`] === 'object';
 }
 
 
@@ -670,13 +744,17 @@ function traverseDir(desiredDir, dir, dirStr)
     let dirCheck = desiredDir[i];
     if(dirCheck in dir && isFolder(dirCheck, dir))
           {
-            eval("dir = dir." + dirCheck);
+            dir = dir[`${dirCheck}`];
             dirStr += "/" + dirCheck;
           }
     else if(dirCheck === '..')
           {
+            dir = fileStructure;
             dirStr = dirStr.substr(0, dirStr.lastIndexOf("/"));
-            eval("dir = fileStructure" + dirStr.split("/").join("."));
+            dirStr.split("/").filter(e => e !== "").forEach(e => dir = dir[`${e}`]);
+            
+            // no longer works after mkdir was added, allowing possibility of folders with names containing numeric literals
+            // eval("dir = fileStructure" + dirStr.split("/").join("."));
           }
     // Not a directory
     else if(dirCheck in dir && i === desiredDir.length - 1)

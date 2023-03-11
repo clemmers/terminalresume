@@ -5,9 +5,6 @@
 <style>
 
 body {
-  background-color: black;
-  font-family: monospace;
-  color: white;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -21,17 +18,14 @@ a {
 
 #cursor {
   display: inline-block;
-  background-color: white;
   border-style: solid;
   border-width: 1px;
-  border-color: white;
   font-size: 10px;
 }
 
 #terminal-wrap {
   position: relative;
   width: 50%;
-  background-color: black;
   display: flex;
   align-items: flex-start;
   padding: 5px;
@@ -45,21 +39,113 @@ a {
   bottom: 5px;
   width: 100%;
   overflow-y: scroll;
+}
+
+#blackGreen
+{
+  background-image: linear-gradient(to bottom left, black 20%, lime 150%);
+}
+
+#whitePink
+{
+  background-image: linear-gradient(to top right, white, white, hotPink, hotPink);
+}
+
+#blue
+{
+  background-image: linear-gradient(to top right, #729fcf 0%,  #153649 100%);
+}
+
+#blueScreen
+{
+  background-image: linear-gradient(to top right, #ffff4e -100%, #0000a4 90%);
+}
+
+.theme
+{
+  left: -5px;
+  bottom: -5px;
+  height: 50px;
+  width: 50px;
   background-color: black;
+  position: absolute;
+  border-radius: 50%;
+  transition: 0.5s;
+
+}
+
+.theme_outline:hover
+{
+    transform: scale(1.6);
+}
+
+
+.theme_outline:hover > .theme
+{
+  transform: rotate(90deg) scale(0.625);
+}
+
+.theme_outline
+{
+  position: absolute;
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  background-color: transparent;
+  border: 3px solid white;
+  transition: 0.5s;
+  display: block;
+}
+
+#themeWrapper
+{
+  position: fixed;
+  left: 30px;
+  bottom: 20px;
+  height: 60px;
+  width: 100vw;
+  display: block;
+}
+
+#one
+{
+  left: 0px;  
+}
+
+#two
+{
+  left: 70px;
+}
+
+#three
+{
+  left: 140px;
+}
+
+#four
+{
+  left: 210px;
 }
 
 </style>
+<link rel="stylesheet" href="blackTheme.css"/>
 </head>
   <body>
     <div id="terminal-wrap">
       <div style="font-size: 0;">
         <span id="terminal" style="font-size: 12px;">
           <div id="date" style="font-size: 12px;"></div>
-          <b><font color="lime">chrisclem</font>:~/chrisclem $</b>
+          <b><font class="userColor">chrisclem</font>:<font class="dirColor">~/chrisclem</font> $</b>
           <font id="cursor">&nbsp;</font>
         </span>
       </div>
     </div>
+    <span id="themeWrapper">
+    <span class="theme_outline" id="one"><span class="theme" id="blackGreen"></span></span>
+    <span class="theme_outline" id="two"><span class="theme" id="whitePink"></span></span>
+    <span class="theme_outline" id="three"><span class="theme" id="blue"></span></span>
+    <span class="theme_outline" id="four"><span class="theme" id="blueScreen"></span></span>
+    </span>
     <script src="script.js"></script>
   </body>
 </html>

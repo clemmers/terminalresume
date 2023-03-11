@@ -95,16 +95,16 @@ bodyClick();
 
 function bodyClick()
 {
-  cursor.style.backgroundColor = 'black';
+  cursor.style.backgroundColor = 'transparent';
   isClickedIn = false;
 }
 
-document.body.addEventListener('click', bodyClick());
+document.body.onclick = () => bodyClick();
 
 terminalWrap.addEventListener('click', function terminalClick(e)
 {
   e.stopPropagation();
-  cursor.style.backgroundColor = 'white';
+  cursor.style.backgroundColor = cursor.style.borderColor;
   isClickedIn = true;
 });
 
@@ -205,7 +205,7 @@ var curDirStr = "/chrisclem";
 
 const dateS = new Date();
 var date = document.getElementById("date");
-date.innerHTML = "<font color='grey'>" + dateS + "</font>";
+date.innerHTML = dateS;
 
 
 var cursorPositionLeft = 0;
@@ -293,7 +293,7 @@ document.onkeydown = function(e) {
       e.preventDefault();
       if(historyIndex < history.length - 1 && history.length != 0)
       {
-        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 67 - cursorPositionLeft;
+        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 43 - cursorPositionLeft;
         historyIndex ++;
         terminal.innerHTML = terminal.innerHTML.substr(0, lengthWithoutCursor - input.length) + history[historyIndex] + terminal.innerHTML.substring(lengthWithoutCursor);
         input = history[historyIndex];
@@ -304,7 +304,7 @@ document.onkeydown = function(e) {
       e.preventDefault();
       if(historyIndex > 0)
       {
-        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 67 - cursorPositionLeft;
+        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 43 - cursorPositionLeft;
         historyIndex --;
         terminal.innerHTML = terminal.innerHTML.substr(0, lengthWithoutCursor - input.length) + history[historyIndex] + terminal.innerHTML.substring(lengthWithoutCursor);
         input = history[historyIndex];
@@ -328,7 +328,7 @@ document.onkeydown = function(e) {
     if(key === "ArrowLeft")
     {
       cursorPositionLeft ++;
-      let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 67 - cursorPositionLeft;
+      let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 43 - cursorPositionLeft;
       cursorCharacter = terminal.innerHTML.substr(lengthWithoutCursor - 1, 1);
       
       terminal.innerHTML = terminal.innerHTML.substring(0, lengthWithoutCursor - 1) + terminal.innerHTML.substring(lengthWithoutCursor + 1, lengthWithoutCursor + cursor.innerHTML.length + 65) //+ prevCharacter +  terminal.innerHTML.substr(terminal.innerHTML.length - cursorPositionLeft); //+ prevCharacter; //terminal.innerHTML.substr(lengthWithoutCursor - cursorPositionLeft + 2, 1);
@@ -351,7 +351,7 @@ document.onkeydown = function(e) {
     {
       if(input.length > 0)
       {
-        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 67 - cursorPositionLeft;
+        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 43 - cursorPositionLeft;
         terminal.innerHTML = terminal.innerHTML.substr(0, lengthWithoutCursor - 1) + terminal.innerHTML.substring(lengthWithoutCursor);
         input = input.substr(0, input.length - 1);
         if(historyIndex != -1)
@@ -379,8 +379,8 @@ function enterPress(enterInput)
 {
   if(enterInput === "clear")
       {
-        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 67 - cursorPositionLeft;
-        terminal.innerHTML = "<b><font color='lime'>chrisclem</font>:~" + curDirStr + " $</b> " + terminal.innerHTML.substring(lengthWithoutCursor);
+        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 43 - cursorPositionLeft;
+        terminal.innerHTML = "<font class='userColor'>chrisclem</font>:<font class='dirColor'>~" + curDirStr + "</font> $ " + terminal.innerHTML.substring(lengthWithoutCursor);
       }
       else
       {
@@ -454,7 +454,7 @@ function enterPress(enterInput)
 
 function newLine()
 {
-  addText("<br><b><font color='lime'>chrisclem</font>:~" + curDirStr + " $</b> ");
+  addText("<br><font class='userColor'>chrisclem</font>:<font class='dirColor'>~" + curDirStr + "</font> $ ");
 }
 
 function mkdir(directories)
@@ -548,7 +548,7 @@ function ls(inpt)
     }
     addText('<br>');
     //let arr = Object.keys(currentDirectory);
-    Object.keys(currentDirectory).sort().forEach(function(item) { if(isFolder(item, currentDirectory)) addText('<b><font color=\"DodgerBlue\">' + item + ' </font></b>'); else addText(item + ' ');});
+    Object.keys(currentDirectory).sort().forEach(function(item) { if(isFolder(item, currentDirectory)) addText('<font class="dirColor">' + item + ' </font>'); else addText(item + ' ');});
     newLine();
     return;
   }
@@ -563,7 +563,7 @@ function ls(inpt)
       return;
     }
     addText('<br>');
-    Object.keys(lsDir[0]).sort().forEach(function(item) {if(isFolder(item, lsDir[0])) addText('<b><font color=\"DodgerBlue\">' + item + ' </font></b>'); else addText(item + ' ');});
+    Object.keys(lsDir[0]).sort().forEach(function(item) {if(isFolder(item, lsDir[0])) addText('<font class="dirColor">' + item + ' </font>'); else addText(item + ' ');});
   }
   
   else if(lsDir === -1 && inpt.substr(inpt.length - 1) !== '/')
@@ -675,7 +675,7 @@ function printCursor(color)
 // i really dislike that i do it this way
 function addText(text)
 {
-  let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 67 - cursorPositionLeft;
+  let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 43 - cursorPositionLeft;
   terminal.innerHTML = terminal.innerHTML.substring(0, lengthWithoutCursor) + text + terminal.innerHTML.substring(lengthWithoutCursor);
 }
 
@@ -736,7 +736,7 @@ function checkTab(dir, tabInput, dirContent)
     {
       addText('<br>');
       match.forEach(e => addText(e + ' '));
-      addText('<br><b><font color="lime">chrisclem</font>:~' + curDirStr + ' $</b> ' + input);
+      addText('<br><font class="userColor">chrisclem</font>:<font class="dirColor">~' + curDirStr + '</font> $ ' + input);
     }
   }
 }
@@ -797,3 +797,41 @@ function traverseDir(desiredDir, dir, dirStr)
   return [dir, dirStr];
 }
 
+
+/*
+function changeColor(bgColor, textColor, usrColorAfter, dirColor)
+{
+  
+  terminalWrap.style.backgroundColor = bgColor;
+  document.body.style.color = textColor;
+  let test = document.getElementsByClassName(themeUserColor);
+  // terminal.innerHTML += test[0].className;
+  //test.forEach(e => e.className = "userColorTwo");
+  for(let i = 0; i < test.length; i++)
+  {
+    test[i].className = usrColorAfter;
+    themeUserColor = usrColorAfter;
+  }
+  //document.getElementsByClassName("dirColor").forEach(e => e.style.color = dirColor);
+}
+
+*/
+
+// var theme3 = document.getElementsByClassName("three");
+
+// bg, defaultText, username, directory
+// themeOne.onclick = () => changeColor("black", "white", "userColor", "dirColor","DodgerBlue");
+// themeTwo.addEventListener('click', changeColor("white" ));
+// themeTwo.onclick = () => changeColor("#153649", "#f0f0f0", "userColorTwo", "dirColor");
+
+document.getElementById("one").onclick = () => changeColor("blackTheme");
+document.getElementById("two").onclick = () => changeColor("pinkTheme");
+document.getElementById("three").onclick = () => changeColor("blueTheme");
+document.getElementById("four").onclick = () => changeColor("blueScreenTheme");
+
+function changeColor(theme)
+{
+  document.getElementsByTagName("head")[0].insertAdjacentHTML(
+    "beforeend",
+    `<link rel='stylesheet' href='${theme}.css' />`);
+}

@@ -1,0 +1,33 @@
+body {
+  background-color: black;
+  font-family: monospace;
+  color: #FFADF0;
+}
+
+.userColor
+{
+  font-weight: bold;
+  color: #FC28FB;
+}
+
+.dirColor
+{
+  font-weight: bold;
+  color: #FFADF0;
+}
+
+#cursor {
+  background-color: #FBCAFF;
+  border-color: #FBCAFF;
+}
+
+#terminal-wrap {
+  background-color: #FDEBF7;
+  border: 1px solid #f0f0f0;
+}
+
+#date
+{
+    font-weight: normal;
+    color: #FC28FB;
+}

@@ -797,33 +797,6 @@ function traverseDir(desiredDir, dir, dirStr)
   return [dir, dirStr];
 }
 
-
-/*
-function changeColor(bgColor, textColor, usrColorAfter, dirColor)
-{
-  
-  terminalWrap.style.backgroundColor = bgColor;
-  document.body.style.color = textColor;
-  let test = document.getElementsByClassName(themeUserColor);
-  // terminal.innerHTML += test[0].className;
-  //test.forEach(e => e.className = "userColorTwo");
-  for(let i = 0; i < test.length; i++)
-  {
-    test[i].className = usrColorAfter;
-    themeUserColor = usrColorAfter;
-  }
-  //document.getElementsByClassName("dirColor").forEach(e => e.style.color = dirColor);
-}
-
-*/
-
-// var theme3 = document.getElementsByClassName("three");
-
-// bg, defaultText, username, directory
-// themeOne.onclick = () => changeColor("black", "white", "userColor", "dirColor","DodgerBlue");
-// themeTwo.addEventListener('click', changeColor("white" ));
-// themeTwo.onclick = () => changeColor("#153649", "#f0f0f0", "userColorTwo", "dirColor");
-
 document.getElementById("one").onclick = () => changeColor("blackTheme");
 document.getElementById("two").onclick = () => changeColor("pinkTheme");
 document.getElementById("three").onclick = () => changeColor("blueTheme");

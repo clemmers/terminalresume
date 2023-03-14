@@ -9,6 +9,12 @@ body {
   justify-content: center;
   align-items: center;
   height: 97%;
+  background-color: black;
+}
+
+body::-webkit-scrollbar
+{
+    display: none;
 }
 
 a {
@@ -39,6 +45,7 @@ a {
   bottom: 5px;
   width: 100%;
   overflow-y: scroll;
+  scrollbar-width: none;
 }
 
 #blackGreen
@@ -87,6 +94,10 @@ a {
 
 .theme_outline
 {
+  visibility: hidden;
+  left: 0px;
+  z-index: -1;
+  top: 23%;
   position: absolute;
   height: 40px;
   width: 40px;
@@ -102,33 +113,60 @@ a {
   position: fixed;
   left: 30px;
   bottom: 20px;
-  height: 60px;
-  width: 100vw;
+  height: 80px;
   display: block;
 }
 
-#one
+#themeWrapper:hover
 {
-  left: 0px;  
+  width: 350px;
 }
 
-#two
+#themeWrapper:hover .theme_outline
 {
-  left: 70px;
+  visibility: visible;
 }
 
-#three
+#themeWrapper:hover .one
+{
+  left: 0px ; 
+}
+
+#themeWrapper:hover .two
+{
+  left: 70px;  
+}
+
+#themeWrapper:hover .three
 {
   left: 140px;
 }
 
-#four
+#themeWrapper:hover .four
 {
   left: 210px;
 }
 
+#themeWrapper:hover .five
+{
+  left: 280px;
+}
+
+.one
+{
+  visibility: visible;
+  z-index: 0;
+  transform: scale(1.05);
+}
+
 </style>
-<link rel="stylesheet" href="blackTheme.css"/>
+<span id="theme">
+  <link rel="stylesheet" href="styles/grassTheme.css"/>
+  <link rel="stylesheet" href="styles/blueScreenTheme.css"/>
+  <link rel="stylesheet" href="styles/blueTheme.css"/>
+  <link rel="stylesheet" href="styles/pinkTheme.css"/>
+  <link rel="stylesheet" href="styles/blackTheme.css"/>
+</span>
 </head>
   <body>
     <div id="terminal-wrap">
@@ -141,11 +179,13 @@ a {
       </div>
     </div>
     <span id="themeWrapper">
-    <span class="theme_outline" id="one"><span class="theme" id="blackGreen"></span></span>
-    <span class="theme_outline" id="two"><span class="theme" id="whitePink"></span></span>
-    <span class="theme_outline" id="three"><span class="theme" id="blue"></span></span>
-    <span class="theme_outline" id="four"><span class="theme" id="blueScreen"></span></span>
+    <span class="theme_outline five" id="fifth"><span class="theme" style="background-color: #14773d"></span></span>
+    <span class="theme_outline four" id="fourth"><span class="theme" id="blueScreen"></span></span>
+    <span class="theme_outline three" id="third"><span class="theme" id="blue"></span></span>
+    <span class="theme_outline two" id="second"><span class="theme" id="whitePink"></span></span>
+    <span class="theme_outline one" id="first"><span class="theme" id="blackGreen"></span></span>
     </span>
-    <script src="script.js"></script>
+    <script src="scripts/style.js"></script>
+    <script src="scripts/terminal.js"></script>
   </body>
 </html>

@@ -1,0 +1,35 @@
+/* https://windowsterminalthemes.dev/?theme=Borland */
+
+body {
+  background-color: black;
+  font-family: monospace;
+  color: #fff0a5;
+}
+
+.userColor
+{
+  font-weight: normal;
+  color: #fff0a5;
+}
+
+.dirColor
+{
+  font-weight: normal;
+  color: #fff0a5;
+}
+
+#cursor {
+  background-color: #8e2800;
+  border-color: #8e2800;
+}
+
+#terminal-wrap {
+  background-color: #14773d;
+  border: 1px solid #14773d;
+}
+
+#date
+{
+    font-weight: normal;
+    color: #fff0a5;
+}

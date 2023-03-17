@@ -71,8 +71,15 @@ var terminal = document.getElementById("terminal");
 var terminalWrap = document.getElementById("terminal-wrap");
 var cursor = document.getElementById("cursor");
 
+// has user interacted with webpage by typing into terminal?
+var hasTyped = false;
+
+var breathingText = document.getElementById('breathing-text');
+var imGood = document.getElementById('iKnowWhatIAmDoing');
 
 var isClickedIn = false;
+
+var clickedOutPresses = 0;
 
 bodyClick();
 
@@ -80,6 +87,7 @@ function bodyClick()
 {
   cursor.style.backgroundColor = 'transparent';
   isClickedIn = false;
+  breathingText.innerHTML = "click inside the box below to start!"
 }
 
 document.body.onclick = () => bodyClick();
@@ -89,14 +97,90 @@ terminalWrap.addEventListener('click', function terminalClick(e)
   e.stopPropagation();
   cursor.style.backgroundColor = cursor.style.borderColor;
   isClickedIn = true;
+  if(!hasTyped) 
+  {
+    breathingText.innerHTML = "try typing now. i'll help you navigate around";
+  }
+  
 });
 
 var input = "";
 const history = [""];
 var historyIndex = 0;
 
+setTimeout(
+  function()
+  {
+    if (!hasTyped)
+    {
+      progressText();
+      breathingText.style.visibility = "visible";
+      imGood.style.visibility = "visible";
+      breathe();
+    }
+  },
+10000);
 
+const helperText = [["cat contact", "cat education", "cat employment", "cat skills",
+                    "cd projects/", "cat anti-league-discordbot", "cat conways-game-of-life",
+                    "cat valorant-hack", "cat terminalresume"],
+                    ["we're going to take a look at my resume!",
+                    "now we're going to check out some of my projects!",
+                    "now we're going to check out some of my projects!"]];
+var helperTextIndex = 0;
 
+function progressText()
+{
+  document.onkeydown = function(e)
+  {
+    if(isClickedIn)
+    {
+      if(helperText[0][helperTextIndex] === "")
+      {
+        if(e.key !== "Enter")
+          breathingText.innerHTML = "press enter!";
+        else
+        {
+          enterPress(input);
+          helperTextIndex++;
+          if(helperTextIndex === helperText[0].length)
+          {
+            breathingText.innerHTML = "feel free to explore now! if you need help, just type 'help'";
+            imGood.style.visibility = "hidden";
+            clickedOutPresses = 0;
+            normalInput();
+            return;
+          }
+          breathingText.innerHTML = helperText[1][helperTextIndex < 4 ? 0 : 1];
+        }
+      }
+      else
+      {
+      let key = helperText[0][helperTextIndex].slice(0, 1);
+      helperText[0][helperTextIndex] = helperText[0][helperTextIndex].slice(1);
+      breathingText.innerHTML = helperText[1][helperTextIndex < 4 ? 0 : 1];
+      addText(key);
+      input += key;
+      history[historyIndex] += key;
+      terminal.scrollTop = terminal.scrollHeight;
+      }
+    }
+  };
+}
+
+  
+function breathe() {
+  if(hasTyped)
+  {
+    breathingText.style.visibility = "hidden";
+    return;
+  }
+  breathingText.style.fontSize = '22px';
+  setTimeout(() => {
+    breathingText.style.fontSize = '20px';
+    setTimeout(breathe, 2000);
+  }, 2000);
+}
 
 const commands = [
 ['cat [FILE]', 'concatenate files and print on the standard output'],
@@ -113,75 +197,6 @@ const commands = [
 
 const cmnd = []; 
 commands.forEach(e => cmnd.push(e[0].split(" ")[0] + ' '));
-
-const fileStructure = 
-{
-    chrisclem : 
-    {
-      contact: '<font style="font-size: 6px"><br></font><b><a href="mailto: chrisclem244@yahoo.com"><font style="font-size: 12px; line-height: 0px">&#128231;</font> chrisclem244@yahoo.com</a><br>'
-                + '<font style="font-size: 6px"><br></font><font style="font-size: 12px; line-height: 0px">&#128222;</font> (818)497-1045<br><font style="font-size: 6px"><br></font>'
-                + '<a href="https://github.com/clemmers"><img src="github-mark-white.svg" alt="Github:" height="12px" width="relative"> clemmers</a></b><font style="font-size: 6px"><br></font>',
-      education: '<b class="dirColor"><a target="_blank" href="https://goo.gl/maps/C6VW1p2zdhyGBFXc8">Crescenta Valley High School</a> (August 2020 to Current)</b>'
-                + '<br>info about my academic achievements<br>interesting info',
-      employment: '<b>Mitch Clem Management<br><a target="_blank" href="https://goo.gl/maps/HQi3KsBrJepPHcN66"><font style="font-size: 12px; line-height: 0px">&#128205</font> Glendale, CA</a></b>'
-                + '<br>Social Media Presence Manager (March 2020 to Current)<br> Improved page content,'
-                + ' keyword releveancy, and branding to achieve search engine optimization goals<br>'
-                + ' Discussed site requirements with client to produce actionable development plans and budgets',
-      projects: 
-      {
-        // github: '<a target="_blank" href="https://github.com/clemmers"><font style="font-size: 12px; line-height: 0px">&#128279;</font> <b>GitHub/clemmers</a></b>',
-      },
-      skills: '- Fast Learner<br>- Complex Problem Solving<br>- Advanced Analytical Thinking<br>'
-              + '- Teamwork<br>- Agile Development Methodology<br>- Unix Shell<br>'
-              + '- Code Analysis and Development<br>- Programing Languages: Java, JavaScript, Python'
-    },
-    chris1 : 
-    {
-      folder1 : 
-      {
-        subfolder1 : 
-        {
-          coolieboolie : 'wow!'
-        }
-      },
-      folder2:
-      {
-        subfolder1 :
-        {
-          coolfolder : 
-          {
-            yippie : 'yippie!!!'
-          }
-        }
-      }
-    }
-};
-
-var request = new XMLHttpRequest();
-
-
-request.open('GET', 'https://api.github.com/users/clemmers/repos', true)
-
-request.onload = function () {
-  var data = JSON.parse(this.response);
-  data.forEach(function(e){
-    
-    let description = "<a target='_blank' href='" + e.html_url + "'><font style='font-size: 12px; line-height: 0px'>&#128279;</font><b>" + e.full_name + "</b></a><br>"
-                      + e.description
-                      + "<br>Made in " + e.language
-                      + "<br><font style='font-size: 12px; line-height: 0px'>&#11088;</font>: " + e.stargazers_count
-                      + "<br><font style='font-size: 12px; line-height: 0px'>&#128064;</font>: " + e.watchers_count;
-    
-    fileStructure["chrisclem"]["projects"][`${e.name}`] = description;
-    //eval('Object.assign(fileStructure.chrisclem.projects, {"' + e.name.replace(/-/g, '_') + '" : "' + description + '"});');
-    
-  });
-  console.log(fileStructure);
-};
-
-request.send();
-
-
 
 var currentDirectory = fileStructure.chrisclem;
 var curDirStr = "/chrisclem";
@@ -205,137 +220,155 @@ if (res.ok) {
 }
 
 */
+normalInput();
 
-
-document.onkeydown = function(e) {
-  if(isClickedIn)
+function normalInput()
+{
+  document.onkeydown = function(e)
   {
-    var key = e.key;
-    
-    if(key === "Tab")
+    if(isClickedIn)
     {
-      e.preventDefault();
+      hasTyped = true;
+      var key = e.key;
       
-      let desiredDir = input.split(" ");
-      if(desiredDir.length === 1)
+      if(key === "Tab")
       {
-        if(input !== "")
-          checkTab(currentDirectory, input, cmnd);
-      }
-      else
-      {
-        desiredDir = desiredDir[desiredDir.length - 1];
-        if(desiredDir !== undefined)
-        {
-            let dir;
-            let lastSlashIndex = desiredDir.lastIndexOf('/');
-            if(lastSlashIndex !== -1)
-            {
-              
-              // desiredDir = desiredDir.split("/");
-              // dir = traverseDir(desiredDir.splice(0, desiredDir.length - 1), currentDirectory, curDirStr)[0];
-              dir = traverseDir(desiredDir.substring(0, lastSlashIndex + 1), currentDirectory, curDirStr)[0];
-              desiredDir = desiredDir.substring(lastSlashIndex + 1);
-              
-            }
-            else
-              dir = currentDirectory;
-            let dirContent = [];
-            switch(input.split(" ")[0])
-            {
-            case "cd" : case 'mkdir' :
-              Object.keys(dir).forEach(function(e) {if(isFolder(e, dir))dirContent.push(e + '/')});
-              break;
-            case "help" : 
-              dirContent = cmnd;
-              break;
-            default :
-              Object.keys(dir).forEach(function(e) {let s = ''; if(isFolder(e, dir)) s = '/'; else s = ' '; dirContent.push(e + s)});
-              break;
-            }
-            checkTab(dir, desiredDir, dirContent);
-        }
-      }
-    }
-    
-    if(key === "ArrowUp")
-    {
-      e.preventDefault();
-      if(historyIndex < history.length - 1 && history.length != 0)
-      {
-        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 43 - cursorPositionLeft;
-        historyIndex ++;
-        terminal.innerHTML = terminal.innerHTML.substr(0, lengthWithoutCursor - input.length) + history[historyIndex] + terminal.innerHTML.substring(lengthWithoutCursor);
-        input = history[historyIndex];
-      }
-    }
-    if(key === "ArrowDown")
-    {
-      e.preventDefault();
-      if(historyIndex > 0)
-      {
-        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 43 - cursorPositionLeft;
-        historyIndex --;
-        terminal.innerHTML = terminal.innerHTML.substr(0, lengthWithoutCursor - input.length) + history[historyIndex] + terminal.innerHTML.substring(lengthWithoutCursor);
-        input = history[historyIndex];
+        e.preventDefault();
         
-      }
-    }
-    
-    
-    /*
-    if(key === "ArrowLeft")
-    {
-      printCursor("black");
-      cursorPositionLeft ++;
-      printCursor("white");
-    }
-    
-    */
-    
-
-    /*
-    if(key === "ArrowLeft")
-    {
-      cursorPositionLeft ++;
-      let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 43 - cursorPositionLeft;
-      cursorCharacter = terminal.innerHTML.substr(lengthWithoutCursor - 1, 1);
-      
-      terminal.innerHTML = terminal.innerHTML.substring(0, lengthWithoutCursor - 1) + terminal.innerHTML.substring(lengthWithoutCursor + 1, lengthWithoutCursor + cursor.innerHTML.length + 65) //+ prevCharacter +  terminal.innerHTML.substr(terminal.innerHTML.length - cursorPositionLeft); //+ prevCharacter; //terminal.innerHTML.substr(lengthWithoutCursor - cursorPositionLeft + 2, 1);
-      prevCharacter = cursorCharacter;
-    }
-    
-    */
-  
-    
-    if(key.length === 1)
-    {
-      addText(key);
-      input += key;
-      history[historyIndex] += key;
-      terminal.scrollTop = terminal.scrollHeight;
-      tabNum = 0;
-    }
-    
-    else if(key === "Backspace")
-    {
-      if(input.length > 0)
-      {
-        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 43 - cursorPositionLeft;
-        terminal.innerHTML = terminal.innerHTML.substr(0, lengthWithoutCursor - 1) + terminal.innerHTML.substring(lengthWithoutCursor);
-        input = input.substr(0, input.length - 1);
-        if(historyIndex != -1)
+        let desiredDir = input.split(" ");
+        if(desiredDir.length === 1)
         {
-          history[historyIndex] = history[historyIndex].substr(0, history[historyIndex].length - 1);
+          if(input !== "")
+            checkTab(currentDirectory, input, cmnd);
+        }
+        else
+        {
+          desiredDir = desiredDir[desiredDir.length - 1];
+          if(desiredDir !== undefined)
+          {
+              let dir;
+              let lastSlashIndex = desiredDir.lastIndexOf('/');
+              if(lastSlashIndex !== -1)
+              {
+                
+                // desiredDir = desiredDir.split("/");
+                // dir = traverseDir(desiredDir.splice(0, desiredDir.length - 1), currentDirectory, curDirStr)[0];
+                dir = traverseDir(desiredDir.substring(0, lastSlashIndex + 1), currentDirectory, curDirStr)[0];
+                desiredDir = desiredDir.substring(lastSlashIndex + 1);
+                
+              }
+              else
+                dir = currentDirectory;
+              let dirContent = [];
+              switch(input.split(" ")[0])
+              {
+              case "cd" : case 'mkdir' :
+                Object.keys(dir).forEach(function(e) {if(isFolder(e, dir))dirContent.push(e + '/')});
+                break;
+              case "help" : 
+                dirContent = cmnd;
+                break;
+              default :
+                Object.keys(dir).forEach(function(e) {let s = ''; if(isFolder(e, dir)) s = '/'; else s = ' '; dirContent.push(e + s)});
+                break;
+              }
+              checkTab(dir, desiredDir, dirContent);
+          }
         }
       }
+      
+      if(key === "ArrowUp")
+      {
+        e.preventDefault();
+        if(historyIndex < history.length - 1 && history.length != 0)
+        {
+          let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 43 - cursorPositionLeft;
+          historyIndex ++;
+          terminal.innerHTML = terminal.innerHTML.substr(0, lengthWithoutCursor - input.length) + history[historyIndex] + terminal.innerHTML.substring(lengthWithoutCursor);
+          input = history[historyIndex];
+        }
+      }
+      if(key === "ArrowDown")
+      {
+        e.preventDefault();
+        if(historyIndex > 0)
+        {
+          let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 43 - cursorPositionLeft;
+          historyIndex --;
+          terminal.innerHTML = terminal.innerHTML.substr(0, lengthWithoutCursor - input.length) + history[historyIndex] + terminal.innerHTML.substring(lengthWithoutCursor);
+          input = history[historyIndex];
+          
+        }
+      }
+      
+      
+      /*
+      if(key === "ArrowLeft")
+      {
+        printCursor("black");
+        cursorPositionLeft ++;
+        printCursor("white");
+      }
+      
+      */
+      
+  
+      /*
+      if(key === "ArrowLeft")
+      {
+        cursorPositionLeft ++;
+        let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 43 - cursorPositionLeft;
+        cursorCharacter = terminal.innerHTML.substr(lengthWithoutCursor - 1, 1);
+        
+        terminal.innerHTML = terminal.innerHTML.substring(0, lengthWithoutCursor - 1) + terminal.innerHTML.substring(lengthWithoutCursor + 1, lengthWithoutCursor + cursor.innerHTML.length + 65) //+ prevCharacter +  terminal.innerHTML.substr(terminal.innerHTML.length - cursorPositionLeft); //+ prevCharacter; //terminal.innerHTML.substr(lengthWithoutCursor - cursorPositionLeft + 2, 1);
+        prevCharacter = cursorCharacter;
+      }
+      
+      */
+    
+      
+      if(key.length === 1)
+      {
+        addText(key);
+        input += key;
+        history[historyIndex] += key;
+        terminal.scrollTop = terminal.scrollHeight;
+        tabNum = 0;
+      }
+      
+      else if(key === "Backspace")
+      {
+        if(input.length > 0)
+        {
+          let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 43 - cursorPositionLeft;
+          terminal.innerHTML = terminal.innerHTML.substr(0, lengthWithoutCursor - 1) + terminal.innerHTML.substring(lengthWithoutCursor);
+          input = input.substr(0, input.length - 1);
+          if(historyIndex != -1)
+          {
+            history[historyIndex] = history[historyIndex].substr(0, history[historyIndex].length - 1);
+          }
+        }
+      }
+      else if(key === "Enter")
+      {
+        enterPress(input);
+      }
     }
-    else if(key === "Enter")
+    else
     {
-      enterPress(input);
+      clickedOutPresses++;
+      if(clickedOutPresses > 5)
+      {
+        progressText();
+        breathingText.style.visibility = "visible";
+        imGood.style.visibility = "visible";
+        breathe();
+        clickedOutPresses = 0;
+      }
     }
-  }
-};
+  };
+
+}
 
 function runCommand(command)
 {

@@ -42,7 +42,7 @@ theme1.onclick = () => changeColor(theme1, "blackTheme");
 theme2.onclick = () => changeColor(theme2, "pinkTheme");
 theme3.onclick = () => changeColor(theme3, "blueTheme");
 theme4.onclick = () => changeColor(theme4, "blueScreenTheme");
-theme5.onclick = () => changeColor(theme4, "grassTheme");
+theme5.onclick = () => changeColor(theme5, "grassTheme");
 
 function changeColor(themeObj, theme)
 {

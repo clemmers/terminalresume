@@ -54,7 +54,9 @@ a {
       </span>
           </div>
 </div>
+<script src="./scripts/files.js"></script>
 <script>
+
     if (!navigator.userAgent.match(/Android/i)
     && !navigator.userAgent.match(/webOS/i)
     && !navigator.userAgent.match(/iPhone/i)
@@ -65,11 +67,18 @@ a {
 {
     document.location = "index.html";
 }
+
+
     const dateS = new Date();
     document.getElementById("date").innerHTML = "<font color='grey'>" + dateS + "</font>";
     function revealProjects()
     {
-        document.getElementById("projects").innerHTML = `<b><font color="lime">chrisclem</font>:~/chrisclem $</b> cd projects/<br><b><font color="lime">chrisclem</font>:~/chrisclem/projects $</b> cat anti_league_discordbot <br><a target="_blank" href="https://github.com/clemmers/anti-league-discordbot"><font style="font-size: 2.2vw; line-height: 0px">🔗</font><b>clemmers/anti-league-discordbot</b></a><br>harrasses imbeciles for playing league of legends<br>Made in Python<br><font style="font-size: 2.2vw; line-height: 0px">⭐</font>: 2<br><font style="font-size: 2.2vw; line-height: 0px">👀</font>: 2<br><b><font color="lime">chrisclem</font>:~/chrisclem/projects $</b> cat conways_game_of_life <br><a target="_blank" href="https://github.com/clemmers/conways-game-of-life"><font style="font-size: 2.2vw; line-height: 0px">🔗</font><b>clemmers/conways-game-of-life</b></a><br>cv hackathon project<br>Made in Java<br><font style="font-size: 2.2vw; line-height: 0px">⭐</font>: 0<br><font style="font-size: 2.2vw; line-height: 0px">👀</font>: 0<br><b><font color="lime">chrisclem</font>:~/chrisclem/projects $</b> cat valorant_hack <br><a target="_blank" href="https://github.com/clemmers/valorant-hack"><font style="font-size: 2.2vw; line-height: 0px">🔗</font><b>clemmers/valorant-hack</b></a><br>triggerbot hack that shoots the enemy when they walk infront of the screen<br>Made in C++<br><font style="font-size: 2.2vw; line-height: 0px">⭐</font>: 0<br><font style="font-size: 2.2vw; line-height: 0px">👀</font>: 0<br><b><font color="lime">chrisclem</font>:~/chrisclem/projects $</b> cat terminalresume <br><a target="_blank" href="https://github.com/clemmers/terminalresume"><font style="font-size: 2.2vw; line-height: 0px">🔗</font><b>clemmers/terminalresume</b></a><br>Made in HTML<br><font style="font-size: 2.2vw; line-height: 0px">⭐</font>: 0<br><font style="font-size: 2.2vw; line-height: 0px">👀</font>: 0<br><b><font color="lime">chrisclem</font>:~/chrisclem/projects $</b> <font id="cursor" style="background-color: white;">&nbsp;</font>`;
+        document.getElementById("projects").innerHTML = 
+        `<b><font color="lime">chrisclem</font>:~/chrisclem $</b> cd projects/<br><b><font color="lime">chrisclem</font>:~/chrisclem/projects $</b> cat anti-league-discordbot <br>
+        ${fileStructure["chrisclem"]["projects"]["anti-league-discordbot"]}<br><b><font color="lime">chrisclem</font>:~/chrisclem/projects $</b> cat conways_game_of_life <br>
+        ${fileStructure["chrisclem"]["projects"]["conways-game-of-life"]}<br><b><font color="lime">chrisclem</font>:~/chrisclem/projects $</b> cat valorant_hack <br>
+        ${fileStructure["chrisclem"]["projects"]["valorant-hack"]}<br><b><font color="lime">chrisclem</font>:~/chrisclem/projects $</b> cat terminalresume <br>
+        ${fileStructure["chrisclem"]["projects"]["terminalresume"]}<br><b><font color="lime">chrisclem</font>:~/chrisclem/projects $</b> <font id="cursor" style="background-color: white;">&nbsp;</font>`;
     }
 </script>
 </body>

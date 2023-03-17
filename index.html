@@ -159,6 +159,27 @@ a {
   transform: scale(1.05);
 }
 
+#breathing-wrapper
+{
+  text-align: center;
+  position: absolute;
+  top: 10%;
+}
+
+#breathing-text {
+  font-size: 20px;
+  line-height: 40px;
+  color: DodgerBlue;
+  transition: font-size 2s ease-in-out;
+  visibility: hidden;
+  margin: 0px;
+}
+
+#iKnowWhatIAmDoing
+{
+  visibility: hidden;
+}
+
 </style>
 <span id="theme">
   <link rel="stylesheet" href="styles/grassTheme.css"/>
@@ -169,6 +190,13 @@ a {
 </span>
 </head>
   <body>
+    <span id="breathing-wrapper">
+      <p id="breathing-text">click inside the box below to start!</p>
+      <button type="button" id="iKnowWhatIAmDoing" style="font-size: 12px;" 
+      onclick="breathingText.style.visibility = 'hidden';
+              imGood.style.visibility = 'hidden'; normalInput();">
+      i know what i'm doing!</button>
+    </span>
     <div id="terminal-wrap">
       <div style="font-size: 0;">
         <span id="terminal" style="font-size: 12px;">
@@ -185,7 +213,8 @@ a {
     <span class="theme_outline two" id="second"><span class="theme" id="whitePink"></span></span>
     <span class="theme_outline one" id="first"><span class="theme" id="blackGreen"></span></span>
     </span>
-    <script src="scripts/style.js"></script>
-    <script src="scripts/terminal.js"></script>
+    <script src="./scripts/style.js"></script>
+    <script src="./scripts/files.js"></script>
+    <script src="./scripts/terminal.js"></script>
   </body>
 </html>

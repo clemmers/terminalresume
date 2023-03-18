@@ -74,8 +74,8 @@ var cursor = document.getElementById("cursor");
 // has user interacted with webpage by typing into terminal?
 var hasTyped = false;
 
-var breathingText = document.getElementById('breathing-text');
-var imGood = document.getElementById('iKnowWhatIAmDoing');
+// var breathingText = document.getElementById('breathing-text');
+// var imGood = document.getElementById('iKnowWhatIAmDoing');
 
 var isClickedIn = false;
 
@@ -87,7 +87,7 @@ function bodyClick()
 {
   cursor.style.backgroundColor = 'transparent';
   isClickedIn = false;
-  breathingText.innerHTML = "click inside the box below to start!"
+  // breathingText.innerHTML = "click inside the box below to start!"
 }
 
 document.body.onclick = () => bodyClick();
@@ -97,10 +97,10 @@ terminalWrap.addEventListener('click', function terminalClick(e)
   e.stopPropagation();
   cursor.style.backgroundColor = cursor.style.borderColor;
   isClickedIn = true;
-  if(!hasTyped) 
-  {
-    breathingText.innerHTML = "try typing now. i'll help you navigate around";
-  }
+  //if(!hasTyped) 
+  //{
+    //breathingText.innerHTML = "try typing now. i'll help you navigate around";
+  //}
   
 });
 
@@ -416,6 +416,7 @@ function normalInput()
     else
     {
       clickedOutPresses++;
+      /*
       if(clickedOutPresses > 5)
       {
         progressText();
@@ -424,6 +425,7 @@ function normalInput()
         breathe();
         clickedOutPresses = 0;
       }
+      */
     }
   };
 

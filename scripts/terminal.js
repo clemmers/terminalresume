@@ -108,6 +108,8 @@ var input = "";
 const history = [""];
 var historyIndex = 0;
 
+// old outdated helper tool
+/*
 setTimeout(
   function()
   {
@@ -181,6 +183,7 @@ function breathe() {
     setTimeout(breathe, 2000);
   }, 2000);
 }
+*/
 
 const commands = [
 ['cat [FILE]', 'concatenate files and print on the standard output'],
@@ -220,7 +223,63 @@ if (res.ok) {
 }
 
 */
-normalInput();
+
+var commandFinished = false;
+
+const helperText = ["cat contact", "cat education", "cat employment", "cat skills",
+                    "cd projects/", "cat anti-league-discordbot", "cat conways-game-of-life",
+                    "cat valorant-hack", "cat terminalresume"];
+
+let helpText = document.getElementById("help-text");
+
+function revealTerminal(needHelp = false, text = `fire, all you need to do is 
+    press any key when you're ready to advance to the next section<br>woah!! 
+    this part isnt ready yet cuz theres a bug i am too tired to fix so tomorrow
+    hopefully i will fix this part unless i decide to do something with my life 
+    tomorrow!`)
+{
+    let terminalStuff = document.getElementById("not-welcome");
+    document.getElementById("home-screen").style.display = "none";
+    helpText.innerHTML = text;
+    helpText.style.visibility = "visible";
+    helpText.style.opacity = "1";
+    setTimeout(() => {
+        helpText.style.top = "10%";
+        setTimeout(() => {
+        terminalStuff.style.visibility = "visible";
+        terminalStuff.style.opacity = "1";
+        }, 1000);
+    }, 2000);
+    needHelp ? helpKeyPress() : normalInput();
+}
+
+function helpKeyPress()
+{
+  document.onkeydown = function(e)
+  {
+    if(commandFinished)
+    {
+      commandFinished = false;
+      typeNextCommand();
+    }
+  }
+  typeNextCommand();
+}
+
+function typeNextCommand(i = 0)
+{
+  if(i === helperText[0].length)
+  {
+    commandFinished = true;
+    enterPress(helperText[0]);
+    helperText.splice(0, 1);
+    return;
+  }
+  setTimeout(() => {
+        addText(helperText[0].charAt(i));
+        typeNextCommand(i+1);
+    }, Math.floor(Math.random() * 20 + 50));
+}
 
 function normalInput()
 {
@@ -400,6 +459,10 @@ function enterPress(enterInput)
           break;
           
         case 'help':
+          helpText.style.opacity = "0";
+          setTimeout(() => {
+          helpText.style.visibility = "hidden";
+          }, 2000);
           help(enterInput.split(" ")[1]);
           break;
           

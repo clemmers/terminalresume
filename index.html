@@ -6,10 +6,9 @@
 
 body {
   display: flex;
-  justify-content: center;
-  align-items: center;
   height: 97%;
   background-color: black;
+  overflow: hidden;
 }
 
 body::-webkit-scrollbar
@@ -30,13 +29,21 @@ a {
 }
 
 #terminal-wrap {
-  position: relative;
   width: 50%;
+  height: 56.25%;
   display: flex;
   align-items: flex-start;
   padding: 5px;
   border: 1px solid white;
   overflow: hidden;
+}
+
+.center
+{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 #terminal {
@@ -180,6 +187,119 @@ a {
   visibility: hidden;
 }
 
+#home-screen
+{
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 80%;
+  justify-content: space-evenly;
+}
+
+.purple-grad
+{
+  background-image: linear-gradient(to top, #42378F, #F53844);
+}
+
+.grad-text
+{
+  background-clip: text;
+  color: transparent;
+}
+
+.button-wrapper button
+{
+  background: none;
+  border: none;
+}
+
+#show-me
+{
+  background-image: linear-gradient(to top, green, lightGreen);
+  background-clip: text;
+  color: transparent;
+  padding: 0px;
+}
+
+#i-got-this
+{
+  background: linear-gradient(to top, rgb(162, 2, 63) 11.2%, rgb(231, 62, 68) 53.6%, rgb(255, 129, 79) 91.1%);
+  background-clip: text;
+  color: transparent;
+  padding: 0px;
+}
+
+.button-line
+{
+  width: 0px;
+  height: 2px;
+  transition: 0.75s ease-out;
+}
+
+#green-line-grad
+{
+  background-image: linear-gradient(45deg, green 75%, lightGreen);
+}
+
+#red-line-grad
+{
+  background: linear-gradient(45deg, rgb(162, 2, 63) 11.2%, rgb(231, 62, 68) 53.6%, rgb(255, 129, 79) 91.1%);
+}
+
+.button-wrapper
+{
+  margin: 50px;
+}
+
+.button-wrapper:hover .button-line
+{
+  width: 100%;
+}
+
+#buttons
+{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  position: sticky;
+  transform: translate(0, 500%);
+  transition: 2s;
+}
+
+#not-welcome
+{
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 2s;
+}
+
+#title-wrapper
+{
+  width: 400px;
+}
+
+.title-cursor-wrapper
+{
+  display: flex;
+  flex-direction: row;
+}
+
+#subtitle-cursor
+{
+  visibility: hidden;
+}
+
+#help-text
+{
+  text-align: center;
+  width: 50%;
+  transition: opacity 2s, top 2s ease-out;
+  visibility: hidden;
+  opacity: 0;
+}
+
 </style>
 <span id="theme">
   <link rel="stylesheet" href="styles/grassTheme.css"/>
@@ -190,6 +310,7 @@ a {
 </span>
 </head>
   <body>
+    <span id="not-welcome">
     <span id="breathing-wrapper">
       <p id="breathing-text">click inside the box below to start!</p>
       <button type="button" id="iKnowWhatIAmDoing" style="font-size: 12px;" 
@@ -197,7 +318,7 @@ a {
               imGood.style.visibility = 'hidden'; normalInput();">
       i know what i'm doing!</button>
     </span>
-    <div id="terminal-wrap">
+    <div class="center" id="terminal-wrap">
       <div style="font-size: 0;">
         <span id="terminal" style="font-size: 12px;">
           <div id="date" style="font-size: 12px;"></div>
@@ -213,6 +334,30 @@ a {
     <span class="theme_outline two" id="second"><span class="theme" id="whitePink"></span></span>
     <span class="theme_outline one" id="first"><span class="theme" id="blackGreen"></span></span>
     </span>
+    </span>
+    <span id="home-screen">
+      <span id="title-wrapper">
+        <span class="title-cursor-wrapper">
+          <h1 class="purple-grad grad-text" id="title"></h1><h1 class="purple-grad" id="title-cursor">&nbsp;</h1>
+        </span>
+        <span class="title-cursor-wrapper">
+        <h2 class="purple-grad grad-text"><span id="subtitle"></span><span class="purple-grad" id="subtitle-cursor">&nbsp;</span></h2>
+        </span>
+      </span>
+      <span id="buttons">
+        <span class="button-wrapper">
+          <button id="show-me" onclick="revealTerminal(needHelp = true);"><h1 style="margin: 2px">show me around</h1>
+          <div class="button-line" id="green-line-grad"></div></button>
+        </span>
+        <span class="button-wrapper">
+          <button id="i-got-this" onclick="revealTerminal(false, `fire, type 'help' to see a list of available commands`);"><h1 style="margin: 2px">i can navigate a terminal</h1>
+          <div class="button-line" id="red-line-grad"></div></button>
+        </span>
+      </span>
+      <button id = "download-button" onclick="download();" style="background: none; color: white; opacity: 0; transition: 1s">
+        <h4>or, just click me to download the resume directly</h4></button>
+    </span>
+    <h1 class="center" id="help-text"></h1>
     <script src="./scripts/style.js"></script>
     <script src="./scripts/files.js"></script>
     <script src="./scripts/terminal.js"></script>

@@ -21,7 +21,7 @@ from buggy code)
   looking at a substring of html element keep track of typed characters in seperate
   string
   
-- user can type out of margins and bounds whops
+- [fixed - css is so useful] user can type out of margins and bounds whops
 
 - cannot delete '<', '>', '&' characters, dont know why (deleted from input string
   but does not disappear in html visual)

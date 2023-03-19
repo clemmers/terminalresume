@@ -71,38 +71,13 @@ var terminal = document.getElementById("terminal");
 var terminalWrap = document.getElementById("terminal-wrap");
 var cursor = document.getElementById("cursor");
 
-// has user interacted with webpage by typing into terminal?
-var hasTyped = false;
 
 // var breathingText = document.getElementById('breathing-text');
 // var imGood = document.getElementById('iKnowWhatIAmDoing');
 
 var isClickedIn = false;
 
-var clickedOutPresses = 0;
 
-bodyClick();
-
-function bodyClick()
-{
-  cursor.style.backgroundColor = 'transparent';
-  isClickedIn = false;
-  // breathingText.innerHTML = "click inside the box below to start!"
-}
-
-document.body.onclick = () => bodyClick();
-
-terminalWrap.addEventListener('click', function terminalClick(e)
-{
-  e.stopPropagation();
-  cursor.style.backgroundColor = cursor.style.borderColor;
-  isClickedIn = true;
-  //if(!hasTyped) 
-  //{
-    //breathingText.innerHTML = "try typing now. i'll help you navigate around";
-  //}
-  
-});
 
 var input = "";
 const history = [""];
@@ -195,7 +170,8 @@ const commands = [
 ['mkdir [DIRECTORIES]', 'make directories'],
 ['pwd', 'print the name of the current working directory'],
 ['resume', 'prints resume to terminal'],
-['projects', 'prints some of my favorite projects']
+['projects', 'prints some of my favorite projects'],
+['whois chrisclem', 'prints out info on chris clem']
 ];
 
 const cmnd = []; 
@@ -226,17 +202,16 @@ if (res.ok) {
 
 var commandFinished = false;
 
-const helperText = ["cat contact", "cat education", "cat employment", "cat skills",
-                    "cd projects/", "cat anti-league-discordbot", "cat conways-game-of-life",
+const helperText = ["whois chrisclem", "cat education", "cat employment", 
+                    "cat skills", "cat contact", "cd projects/",
+                    "cat anti-league-discordbot", "cat conways-game-of-life",
                     "cat valorant-hack", "cat terminalresume"];
 
 let helpText = document.getElementById("help-text");
 
-function revealTerminal(needHelp = false, text = `fire, all you need to do is 
-    press any key when you're ready to advance to the next section<br>woah!! 
-    this part isnt ready yet cuz theres a bug i am too tired to fix so tomorrow
-    hopefully i will fix this part unless i decide to do something with my life 
-    tomorrow!`)
+// called by buttons on home
+function revealTerminal(needHelp = false, text = `fire, im gonna show you around
+my resume. just press any key when youre ready to advance to the next section`)
 {
     let terminalStuff = document.getElementById("not-welcome");
     document.getElementById("home-screen").style.display = "none";
@@ -253,6 +228,7 @@ function revealTerminal(needHelp = false, text = `fire, all you need to do is
     needHelp ? helpKeyPress() : normalInput();
 }
 
+var helpCommandNum = 0;
 function helpKeyPress()
 {
   document.onkeydown = function(e)
@@ -262,14 +238,34 @@ function helpKeyPress()
       commandFinished = false;
       typeNextCommand();
     }
-  }
-  typeNextCommand();
+  };
+  cursor.style.backgroundColor = 'transparent';
+  document.getElementById("cursor").style.backgroundColor = cursor.style.borderColor;
+  setTimeout(() => {
+    helpText.innerHTML = `let's learn a little bit about me`;
+    typeNextCommand();
+  }, 5000);
 }
 
 function typeNextCommand(i = 0)
 {
   if(i === helperText[0].length)
   {
+    switch(helpCommandNum)
+    {
+      case 5:
+        helpText.innerHTML = `now we're going to check out some of the projects
+        i've been working on`;
+        break;
+      case 9:
+        helpText.innerHTML = `those are the highlights! i'm giving you control of the terminal
+        now, feel free to explore. (type 'download' to download my resume)`;
+        normalInput();
+        document.getElementById("cursor").style.backgroundColor = cursor.style.borderColor;
+        isClickedIn = true;
+        break;
+    }
+    helpCommandNum ++;
     commandFinished = true;
     enterPress(helperText[0]);
     helperText.splice(0, 1);
@@ -283,11 +279,25 @@ function typeNextCommand(i = 0)
 
 function normalInput()
 {
+  cursor.style.backgroundColor = 'transparent';
+  isClickedIn = false;
+  document.body.addEventListener('click', function bodyClick()
+  {
+    document.getElementById("cursor").style.backgroundColor = 'transparent';
+    isClickedIn = false;
+  });
+  terminalWrap.addEventListener('click', function terminalClick(e)
+  {
+    // stops body onclick from running
+    e.stopPropagation();
+    document.getElementById("cursor").style.backgroundColor = cursor.style.borderColor;
+    isClickedIn = true;
+  });
+
   document.onkeydown = function(e)
   {
     if(isClickedIn)
     {
-      hasTyped = true;
       var key = e.key;
       
       if(key === "Tab")
@@ -326,6 +336,9 @@ function normalInput()
                 break;
               case "help" : 
                 dirContent = cmnd;
+                break;
+              case "whois" :
+                dirContent = ["chrisclem"];
                 break;
               default :
                 Object.keys(dir).forEach(function(e) {let s = ''; if(isFolder(e, dir)) s = '/'; else s = ' '; dirContent.push(e + s)});
@@ -413,20 +426,6 @@ function normalInput()
         enterPress(input);
       }
     }
-    else
-    {
-      clickedOutPresses++;
-      /*
-      if(clickedOutPresses > 5)
-      {
-        progressText();
-        breathingText.style.visibility = "visible";
-        imGood.style.visibility = "visible";
-        breathe();
-        clickedOutPresses = 0;
-      }
-      */
-    }
   };
 
 }
@@ -502,6 +501,10 @@ function enterPress(enterInput)
           newLine();
           break;
           
+        case 'whois':
+          whois(enterInput.split(" ").slice(-1)[0]);
+          break;
+          
         default:
           addText("<br>Unknown Command: " + enterInput.split(" ")[0]);
           newLine();
@@ -518,6 +521,25 @@ function enterPress(enterInput)
       input = "";
       terminal.scrollTop = terminal.scrollHeight;
       tabNum = 0;
+}
+
+function whois(name)
+{
+  if(name === null || name === "")
+  {
+    addText('<br>Command usage: whois [NAME]<br>Did you mean `whois chrisclem\'?');
+  }
+  else
+  {
+  console.log(name);
+  addText(name === "chrisclem" ? `<br>I'm a junior at Crescenta Valley High School, whos interested in everything computer
+          science related. I enjoy learning about how things work, and expanding my knowledge through hands-on
+          experimenting and tinkering. I'm able to effectively self-manage during independent projects and collaborate as part
+          of a productive team with experience in many different social media platforms and
+          office technology programs.` : `<br>whois: \`${name}': unknown name.<br>
+          Did you mean \`whois chrisclem'?`);
+  }
+  newLine();
 }
 
 function newLine()
@@ -673,10 +695,11 @@ function resume()
   newLine();
   if(curDirStr !== '/chrisclem')
     runCommand('cd ' + locateDirectory('/chrisclem', curDirStr));
-  runCommand('cat contact');
+  runCommand("whois chrisclem");
   runCommand('cat education');
   runCommand('cat employment');
   runCommand('cat skills');
+  runCommand('cat contact');
 }
 
 // note: method of traversing to correct directory only works in linear file structure

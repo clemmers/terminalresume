@@ -30,8 +30,8 @@ request.onload = function () {
   data.forEach(function(e){
     
     let description = "<a target='_blank' href='" + e.html_url + "'><font style='font-size: 12px; line-height: 0px'>&#128279;</font><b>" + e.full_name + "</b></a><br>"
-                      + e.description
-                      + "<br>Made in " + e.language
+                      + (e.description === null ? "click the link to learn more about this project!" : e.description)
+                      + (e.language === null ? "" : "<br>Made in " + e.language)
                       + "<br><font style='font-size: 12px; line-height: 0px'>&#11088;</font>: " + e.stargazers_count
                       + "<br><font style='font-size: 12px; line-height: 0px'>&#128064;</font>: " + e.watchers_count;
     

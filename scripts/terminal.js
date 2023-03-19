@@ -251,30 +251,36 @@ function typeNextCommand(i = 0)
 {
   if(i === helperText[0].length)
   {
-    switch(helpCommandNum)
-    {
-      case 5:
-        helpText.innerHTML = `now we're going to check out some of the projects
-        i've been working on`;
-        break;
-      case 9:
-        helpText.innerHTML = `those are the highlights! i'm giving you control of the terminal
-        now, feel free to explore. (type 'download' to download my resume)`;
-        normalInput();
-        document.getElementById("cursor").style.backgroundColor = cursor.style.borderColor;
-        isClickedIn = true;
-        break;
-    }
-    helpCommandNum ++;
-    commandFinished = true;
-    enterPress(helperText[0]);
-    helperText.splice(0, 1);
-    return;
+    setTimeout(() => {
+      helpCommandNum ++;
+      commandFinished = true;
+      enterPress(helperText[0]);
+      helperText.splice(0, 1);
+      switch(helpCommandNum)
+      {
+        case 6:
+          helpText.innerHTML = `now we're going to check out some of the projects
+          i've been working on`;
+          commandFinished = false;
+          typeNextCommand();
+          break;
+        case 10:
+          helpText.innerHTML = `those are the highlights! i'm giving you control of the terminal
+          now, feel free to explore. (type 'download' to download my resume)`;
+          normalInput();
+          document.getElementById("cursor").style.backgroundColor = cursor.style.borderColor;
+          isClickedIn = true;
+          break;
+      }
+    }, 250);
   }
+  else
+  {
   setTimeout(() => {
         addText(helperText[0].charAt(i));
         typeNextCommand(i+1);
     }, Math.floor(Math.random() * 20 + 50));
+  }
 }
 
 function normalInput()
@@ -532,11 +538,11 @@ function whois(name)
   else
   {
   console.log(name);
-  addText(name === "chrisclem" ? `<br>I'm a junior at Crescenta Valley High School, whos interested in everything computer
+  addText(name === "chrisclem" ? `<br><font style="word-break: normal;">I'm a junior at Crescenta Valley High School, whos interested in everything computer
           science related. I enjoy learning about how things work, and expanding my knowledge through hands-on
           experimenting and tinkering. I'm able to effectively self-manage during independent projects and collaborate as part
           of a productive team with experience in many different social media platforms and
-          office technology programs.` : `<br>whois: \`${name}': unknown name.<br>
+          office technology programs.</font>` : `<br>whois: \`${name}': unknown name.<br>
           Did you mean \`whois chrisclem'?`);
   }
   newLine();

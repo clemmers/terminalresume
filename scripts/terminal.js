@@ -200,6 +200,56 @@ if (res.ok) {
 
 */
 
+// called when back button pressed
+function backButtonPress()
+{
+    document.body.removeEventListener('click', bodyClick);
+    terminalWrap.removeEventListener('click', terminalClick);
+    document.onkeydown = function(e){};
+    
+    // to stop any monkey business!!!!!
+    commandFinished = false;
+    
+    let button = document.getElementById("back-button");
+    button.style.width = "100%";
+    
+    // to ensure hover properties stay the same after hover
+    button.style.setProperty('--scale-num', '1.3');
+    button.style.setProperty('--border-rad', '0%');
+    button.style.borderRadius = '0%';
+    terminalStuff.style.opacity = "0";
+    helpText.style.opacity = "0";
+    homeScreen.style.display = "flex";
+    setTimeout(() => {
+        homeScreen.style.opacity = "1";
+    }, 1000);
+    setTimeout(() => {
+      // clear active terminal input to prevent collision if user comes back in help mode
+      resetActiveLine();
+      
+      
+      terminalStuff.style.visibility = "hidden";
+      helpText.style.visibility = "hidden";
+      
+      // reset changed attributes of moved objects i.e position
+      helpText.style.top = "50%";
+      button.style.width = "40px";
+      button.style.setProperty('--scale-num', '1');
+      button.style.setProperty('--border-rad', '50%');
+      button.style.borderRadius = 'var(--border-rad)';
+    }, 2000);
+}
+
+// clears all user input text from active line
+function resetActiveLine()
+{
+  document.getElementById("cursor").style.backgroundColor = cursor.style.borderColor;
+  let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 43 - cursorPositionLeft;
+  terminal.innerHTML = terminal.innerHTML.substr(0, lengthWithoutCursor - input.length) + terminal.innerHTML.substring(lengthWithoutCursor);
+  input = "";
+}
+
+
 var commandFinished = false;
 
 const helperText = ["whois chrisclem", "cat education", "cat employment", 
@@ -207,14 +257,16 @@ const helperText = ["whois chrisclem", "cat education", "cat employment",
                     "cat anti-league-discordbot", "cat conways-game-of-life",
                     "cat valorant-hack", "cat terminalresume"];
 
+let terminalStuff = document.getElementById("not-welcome");
 let helpText = document.getElementById("help-text");
+let homeScreen = document.getElementById("home-screen");
 
 // called by buttons on home
 function revealTerminal(needHelp = false, text = `fire, im gonna show you around
 my resume. just press any key when youre ready to advance to the next section`)
 {
-    let terminalStuff = document.getElementById("not-welcome");
-    document.getElementById("home-screen").style.display = "none";
+    homeScreen.style.display = "none";
+    homeScreen.style.opacity = "0";
     helpText.innerHTML = text;
     helpText.style.visibility = "visible";
     helpText.style.opacity = "1";
@@ -283,22 +335,26 @@ function typeNextCommand(i = 0)
   }
 }
 
-function normalInput()
-{
-  cursor.style.backgroundColor = 'transparent';
-  isClickedIn = false;
-  document.body.addEventListener('click', function bodyClick()
+function bodyClick()
   {
     document.getElementById("cursor").style.backgroundColor = 'transparent';
     isClickedIn = false;
-  });
-  terminalWrap.addEventListener('click', function terminalClick(e)
-  {
+  }
+  
+function terminalClick(e)
+{
     // stops body onclick from running
     e.stopPropagation();
     document.getElementById("cursor").style.backgroundColor = cursor.style.borderColor;
     isClickedIn = true;
-  });
+}
+
+function normalInput()
+{
+  cursor.style.backgroundColor = 'transparent';
+  isClickedIn = false;
+  document.body.addEventListener('click', bodyClick);
+  terminalWrap.addEventListener('click', terminalClick);
 
   document.onkeydown = function(e)
   {

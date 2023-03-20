@@ -62,16 +62,18 @@ function changeOrder()
     prevTheme = newTheme;
 }
 
-
+var buttons = document.getElementById("buttons");
 var title = document.getElementById("title");
 var subtitle = document.getElementById("subtitle");
 var subCursor = document.getElementById("subtitle-cursor");
+var downloadButton = document.getElementById("download-button");
 
 // reveal title
 
 var titleText = "Hi, my name's Chris!"
 var subtitleText = "The following site contains my resume inside an interactive and navigable temrinal si";
 var subtitleTextTwo = "rminal simulation";
+var numDeleted = 9;
 
 function revealText(i = 0)
 {
@@ -84,8 +86,11 @@ function revealText(i = 0)
         return;
     }
     setTimeout(() => {
-        title.innerHTML += titleText.charAt(i);
-        revealText(i+1);
+        if(!animationFinished)
+        {
+            title.innerHTML += titleText.charAt(i);
+            revealText(i+1);
+        }
     }, Math.floor(Math.random() * 20 + 90));
 }
 
@@ -100,22 +105,28 @@ function revealSubtitle(i = 0)
         return;
     }
     setTimeout(() => {
-        subtitle.innerHTML += subtitleText.charAt(i);
-        revealSubtitle(i+1);
+        if(!animationFinished)
+        {
+            subtitle.innerHTML += subtitleText.charAt(i);
+            revealSubtitle(i+1);
+        }
     }, Math.floor(Math.random() * 20 + 50));
 }
 
 function deleteMistake(i = 0)
 {
-    if(i > 8)
+    if(i === numDeleted)
     {
         // call next action
         correctMistake();
         return;
     }
     setTimeout(() => {
-        subtitle.innerHTML = subtitle.innerHTML.slice(0, -1);
-        deleteMistake(i+1);
+        if(!animationFinished)
+        {
+            subtitle.innerHTML = subtitle.innerHTML.slice(0, -1);
+            deleteMistake(i+1);
+        }
     }, Math.floor(Math.random() * 20 * i + 50));
 }
 
@@ -123,30 +134,62 @@ function correctMistake(i = 0)
 {
     if(i > subtitleTextTwo.length)
     {
-        // call next action
-        cursorBlink();
-        document.getElementById("buttons").style.transform = "translate(0, 0)";
-        setTimeout(() => {
-        document.getElementById("download-button").style.opacity = "1";
-        }, 2000);
-        return;
+        if(!animationFinished)
+        {
+            // call next action
+            animationFinished = true;
+            cursorBlink();
+            buttons.style.transform = "translate(0, 0)";
+            downloadButton.style.opacity = "0";
+            setTimeout(() => {
+                downloadButton.style.visibility = "visible";
+                downloadButton.style.opacity = "1";
+            }, 2000);
+            return;
+        }
     }
     setTimeout(() => {
-        subtitle.innerHTML += subtitleTextTwo.charAt(i);
-        correctMistake(i+1);
+        if(!animationFinished)
+        {
+            subtitle.innerHTML += subtitleTextTwo.charAt(i);
+            correctMistake(i+1);
+        }
     }, Math.floor(Math.random() / i * 20 + 50));
 }
 
 function cursorBlink()
 {
     setTimeout(() => {
-        subCursor.style.visibility = "visible";
+        subCursor.style.visibility = "hidden";
         setTimeout(() => {
-            subCursor.style.visibility = "hidden";
+            subCursor.style.visibility = "visible";
             cursorBlink();
         }, 500);
     }, 500);
 }
+
+var animationFinished = false;
+
+document.onkeydown = function skipAnimation()
+{
+    if(!animationFinished)
+    {
+        animationFinished = true;
+        document.getElementById("title-cursor").style.visibility = "hidden";
+        subCursor.style.visibility = "visible";
+        title.innerHTML = titleText;
+        subtitle.innerHTML = subtitleText.substring(0, subtitleText.length - numDeleted) + subtitleTextTwo;
+        cursorBlink();
+        
+        // bypass animation
+        buttons.classList.add('notransition');
+        buttons.style.transform = "translate(0, 0)";
+        buttons.offsetHeight;
+        buttons.classList.remove('notransition');
+        downloadButton.style.visibility = "visible";
+    }
+};
+
 
 revealText();
 

@@ -6,9 +6,11 @@
 
 body {
   display: flex;
+  flex-direction: column;
   height: 97%;
   background-color: black;
   overflow: hidden;
+  justify-content: center;
 }
 
 body::-webkit-scrollbar
@@ -26,6 +28,7 @@ a {
   border-style: solid;
   border-width: 1px;
   font-size: 10px;
+  border-color: white;
 }
 
 #terminal-wrap {
@@ -198,7 +201,8 @@ a {
   align-items: center;
   width: 100%;
   height: 80%;
-  justify-content: space-evenly;
+  justify-content: space-between;
+  transition: opacity 1s;
 }
 
 .purple-grad
@@ -295,6 +299,8 @@ a {
   flex-direction: row;
 }
 
+
+
 #subtitle-cursor
 {
   visibility: hidden;
@@ -307,6 +313,45 @@ a {
   transition: opacity 2s, top 2s ease-out;
   visibility: hidden;
   opacity: 0;
+}
+
+#back-button
+{
+  --scale-num: 1;
+  --border-rad: 50%;
+  position: absolute;
+  background-color: dodgerBlue;
+  border: none;
+  border-radius: var(--border-rad);
+  height: 40px;
+  width: 40px;
+  right: 30px;
+  bottom: 20px;
+  font-size: 30px;
+  transition: transform 0.5s, width 2s, border-radius 0.5s;
+  transform: scale(var(--scale-num));
+}
+
+#back-button:hover
+{
+  transform: scale(1.3);
+  border-radius: 25%;
+}
+
+#download-button
+{
+  background: none;
+  color: white;
+  opacity: 1;
+  visibility: hidden;
+  transition: opacity 1s
+}
+
+.notransition {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+  transition: none !important;
 }
 
 </style>
@@ -345,6 +390,7 @@ a {
     <span class="theme_outline two" id="second"><span class="theme" id="whitePink"></span></span>
     <span class="theme_outline one" id="first"><span class="theme" id="blackGreen"></span></span>
     </span>
+    <button id="back-button" onclick="backButtonPress();">←</button>
     </span>
     <span id="home-screen">
       <span id="title-wrapper">
@@ -365,7 +411,7 @@ a {
           <div class="button-line" id="red-line-grad"></div></button>
         </span>
       </span>
-      <button id = "download-button" onclick="download();" style="background: none; color: white; opacity: 0; transition: 1s">
+      <button id = "download-button" onclick="download();">
         <h4>or, just click me to download the resume directly</h4></button>
     </span>
     <h1 class="center" id="help-text"></h1>

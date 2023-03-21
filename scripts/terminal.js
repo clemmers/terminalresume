@@ -171,6 +171,8 @@ let terminalStuff = document.getElementById("not-welcome");
 let helpText = document.getElementById("help-text");
 let homeScreen = document.getElementById("home-screen");
 
+
+// should rename this so not to be confused wih showTerminal()
 // called by buttons on home
 function revealTerminal(needHelp = false, text = `bet, imma show you around
 my resume. just press any key when youre ready`)
@@ -179,16 +181,36 @@ my resume. just press any key when youre ready`)
     homeScreen.style.display = "none";
     homeScreen.style.opacity = "0";
     helpText.innerHTML = text;
-    helpText.style.visibility = "visible";
-    helpText.style.opacity = "1";
+    showHelpText();
     setTimeout(() => {
-        helpText.style.top = "10%";
+        moveHelpText();
         setTimeout(() => {
-        terminalStuff.style.visibility = "visible";
-        terminalStuff.style.opacity = "1";
-        needHelp ? readyForHelper() : normalInput();
+        showTerminal();
+        assignHelper();
         }, 1000);
     }, 2000);
+}
+
+function showTerminal()
+{
+  terminalStuff.style.visibility = "visible";
+  terminalStuff.style.opacity = "1";
+}
+
+function showHelpText()
+{
+  helpText.style.visibility = "visible";
+  helpText.style.opacity = "1";
+}
+
+function moveHelpText()
+{
+  helpText.style.top = "10%";
+}
+
+function assignHelper(needHelp)
+{
+  needHelp ? readyForHelper() : normalInput();
 }
 
 function pressToSkipTransition(needHelp)
@@ -197,15 +219,14 @@ function pressToSkipTransition(needHelp)
   {
     helpText.classList.add('notransition');
     terminalStuff.classList.add('notransition');
-    helpText.style.opacity = "1";
-    helpText.style.top = "10%";
+    showHelpText();
+    moveHelpText();
     helpText.offsetHeight;
-    terminalStuff.style.visibility = "visible";
-    terminalStuff.style.opacity = "1";
+    showTerminal();
     terminalStuff.offsetHeight;
     terminalStuff.classList.remove('notransition');
     helpText.classList.remove('notransition');
-    needHelp ? readyForHelper() : normalInput();
+    assignHelper(needHelp);
   };
 }
 

@@ -172,10 +172,10 @@ let helpText = document.getElementById("help-text");
 let homeScreen = document.getElementById("home-screen");
 
 // called by buttons on home
-function revealTerminal(needHelp = false, text = `fire, im gonna show you around
-my resume. just press any key when youre ready to advance to the next section`)
+function revealTerminal(needHelp = false, text = `bet, imma show you around
+my resume. just press any key when youre ready`)
 {
-    pressToSkipTransition();
+    pressToSkipTransition(needHelp);
     homeScreen.style.display = "none";
     homeScreen.style.opacity = "0";
     helpText.innerHTML = text;
@@ -186,12 +186,12 @@ my resume. just press any key when youre ready to advance to the next section`)
         setTimeout(() => {
         terminalStuff.style.visibility = "visible";
         terminalStuff.style.opacity = "1";
-        needHelp ? helpKeyPress() : normalInput();
+        needHelp ? readyForHelper() : normalInput();
         }, 1000);
     }, 2000);
 }
 
-function pressToSkipTransition()
+function pressToSkipTransition(needHelp)
 {
   document.onkeydown = function(e)
   {
@@ -205,10 +205,20 @@ function pressToSkipTransition()
     terminalStuff.offsetHeight;
     terminalStuff.classList.remove('notransition');
     helpText.classList.remove('notransition');
+    needHelp ? readyForHelper() : normalInput();
   };
 }
 
 var helpCommandNum = 0;
+
+function readyForHelper()
+{
+  document.onkeydown = function(e)
+  {
+    helpKeyPress();
+  };
+}
+
 function helpKeyPress()
 {
   document.onkeydown = function(e)
@@ -221,10 +231,8 @@ function helpKeyPress()
   };
   cursor.style.backgroundColor = 'transparent';
   document.getElementById("cursor").style.backgroundColor = cursor.style.borderColor;
-  setTimeout(() => {
-    helpText.innerHTML = `let's learn a little bit about me`;
-    typeNextCommand();
-  }, 5000);
+  helpText.innerHTML = `let's learn a little bit about me (press any key to proceed throughout)`;
+  typeNextCommand();
 }
 
 function typeNextCommand(i = 0)

@@ -175,6 +175,7 @@ let homeScreen = document.getElementById("home-screen");
 function revealTerminal(needHelp = false, text = `fire, im gonna show you around
 my resume. just press any key when youre ready to advance to the next section`)
 {
+    pressToSkipTransition();
     homeScreen.style.display = "none";
     homeScreen.style.opacity = "0";
     helpText.innerHTML = text;
@@ -185,9 +186,26 @@ my resume. just press any key when youre ready to advance to the next section`)
         setTimeout(() => {
         terminalStuff.style.visibility = "visible";
         terminalStuff.style.opacity = "1";
+        needHelp ? helpKeyPress() : normalInput();
         }, 1000);
     }, 2000);
-    needHelp ? helpKeyPress() : normalInput();
+}
+
+function pressToSkipTransition()
+{
+  document.onkeydown = function(e)
+  {
+    helpText.classList.add('notransition');
+    terminalStuff.classList.add('notransition');
+    helpText.style.opacity = "1";
+    helpText.style.top = "10%";
+    helpText.offsetHeight;
+    terminalStuff.style.visibility = "visible";
+    terminalStuff.style.opacity = "1";
+    terminalStuff.offsetHeight;
+    terminalStuff.classList.remove('notransition');
+    helpText.classList.remove('notransition');
+  };
 }
 
 var helpCommandNum = 0;

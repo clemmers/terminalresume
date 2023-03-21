@@ -54,26 +54,23 @@ from buggy code)
 
 - tab autofill prints not in alphabetical order
 
-- once anything is inputted into terminal, can no longer unfocus
+- [FIXED] once anything is inputted into terminal, can no longer unfocus
 
 - directories printing to terminal are not conventionally spaced and sorted
 
+- [FIXED] tree prints lines below last folder in directory shown
+
+- figure out why calling tree multiple times makes the command slow! maybe bc its making so many variables?
+
+- tree does not print correct directory on top when specified and inserts dirs inbetween a 0 and 1
+
 */
-
-// var cursorCharacter;
-// var prevCharacter = '';
-
-// parseInt(window.getComputedStyle(document.getElementById("terminal")).fontSize, 10)
-
 
 var terminal = document.getElementById("terminal");
 
 var terminalWrap = document.getElementById("terminal-wrap");
 var cursor = document.getElementById("cursor");
 
-
-// var breathingText = document.getElementById('breathing-text');
-// var imGood = document.getElementById('iKnowWhatIAmDoing');
 
 var isClickedIn = false;
 
@@ -82,83 +79,6 @@ var isClickedIn = false;
 var input = "";
 const history = [""];
 var historyIndex = 0;
-
-// old outdated helper tool
-/*
-setTimeout(
-  function()
-  {
-    if (!hasTyped)
-    {
-      progressText();
-      breathingText.style.visibility = "visible";
-      imGood.style.visibility = "visible";
-      breathe();
-    }
-  },
-10000);
-
-const helperText = [["cat contact", "cat education", "cat employment", "cat skills",
-                    "cd projects/", "cat anti-league-discordbot", "cat conways-game-of-life",
-                    "cat valorant-hack", "cat terminalresume"],
-                    ["we're going to take a look at my resume!",
-                    "now we're going to check out some of my projects!",
-                    "now we're going to check out some of my projects!"]];
-var helperTextIndex = 0;
-
-function progressText()
-{
-  document.onkeydown = function(e)
-  {
-    if(isClickedIn)
-    {
-      if(helperText[0][helperTextIndex] === "")
-      {
-        if(e.key !== "Enter")
-          breathingText.innerHTML = "press enter!";
-        else
-        {
-          enterPress(input);
-          helperTextIndex++;
-          if(helperTextIndex === helperText[0].length)
-          {
-            breathingText.innerHTML = "feel free to explore now! if you need help, just type 'help'";
-            imGood.style.visibility = "hidden";
-            clickedOutPresses = 0;
-            normalInput();
-            return;
-          }
-          breathingText.innerHTML = helperText[1][helperTextIndex < 4 ? 0 : 1];
-        }
-      }
-      else
-      {
-      let key = helperText[0][helperTextIndex].slice(0, 1);
-      helperText[0][helperTextIndex] = helperText[0][helperTextIndex].slice(1);
-      breathingText.innerHTML = helperText[1][helperTextIndex < 4 ? 0 : 1];
-      addText(key);
-      input += key;
-      history[historyIndex] += key;
-      terminal.scrollTop = terminal.scrollHeight;
-      }
-    }
-  };
-}
-
-  
-function breathe() {
-  if(hasTyped)
-  {
-    breathingText.style.visibility = "hidden";
-    return;
-  }
-  breathingText.style.fontSize = '22px';
-  setTimeout(() => {
-    breathingText.style.fontSize = '20px';
-    setTimeout(breathe, 2000);
-  }, 2000);
-}
-*/
 
 const commands = [
 ['cat [FILE]', 'concatenate files and print on the standard output'],
@@ -169,8 +89,9 @@ const commands = [
 ['ls [FILE]', 'list directory contents'],
 ['mkdir [DIRECTORIES]', 'make directories'],
 ['pwd', 'print the name of the current working directory'],
-['resume', 'prints resume to terminal'],
 ['projects', 'prints some of my favorite projects'],
+['resume', 'prints resume to terminal'],
+['tree [dir]', 'prints tree of directories recursively starting from given dir location'],
 ['whois chrisclem', 'prints out info on chris clem']
 ];
 
@@ -188,17 +109,6 @@ date.innerHTML = dateS;
 var cursorPositionLeft = 0;
 
 var tabNum = 0;
-
-// printCursor("white");
-
-/*
-const res = await fetch('https://api.github.com/users/clemmers/repos');
-if (res.ok) {
-  const data = await res.json();
-  addText(JSON.stringify(data, null, 4));
-}
-
-*/
 
 // called when back button pressed
 function backButtonPress()
@@ -393,7 +303,7 @@ function normalInput()
               let dirContent = [];
               switch(input.split(" ")[0])
               {
-              case "cd" : case 'mkdir' :
+              case "cd" : case 'mkdir' : case 'tree' :
                 Object.keys(dir).forEach(function(e) {if(isFolder(e, dir))dirContent.push(e + '/')});
                 break;
               case "help" : 
@@ -567,6 +477,10 @@ function enterPress(enterInput)
           whois(enterInput.split(" ").slice(-1)[0]);
           break;
           
+        case 'tree':
+          tree(enterInput.split(" ")[1]);
+          break;
+          
         default:
           addText("<br>Unknown Command: " + enterInput.split(" ")[0]);
           newLine();
@@ -583,6 +497,41 @@ function enterPress(enterInput)
       input = "";
       terminal.scrollTop = terminal.scrollHeight;
       tabNum = 0;
+}
+
+function tree(desiredDirStr)
+{
+  let test = defaultChangeDirectorySafely(desiredDirStr, 'tree');
+  if(test[0])
+  {
+    addText(`<br><font class="dirColor">${test[2] === curDirStr ? '.' : curDirStr.substring(curDirStr.lastIndexOf('/') + 1)}</font><br>`);
+    treeRecurse(test[1], test[2]);
+  }
+  newLine();
+}
+
+function treeRecurse(dir, dirStr, keyNum = 0, [...numDeep] = [])
+{
+  let arr = Object.keys(dir).sort().slice(keyNum);
+  let nextFile = arr[0];
+  if(nextFile === undefined)
+  {
+    return;
+  }
+  let isLastInDir = arr.length === 1;
+  numDeep.forEach(e => {addText((e ? '│' : '&nbsp;') + '&nbsp;&nbsp;&nbsp;')});
+  addText(isLastInDir ? '└── ' : '├── ');
+  
+  if(isFolder(nextFile, dir))
+  {
+    addText(`<font class='dirColor'>${nextFile}</font><br>`);
+    treeRecurse(dir[`${nextFile}`], dirStr + `/${nextFile}`, 0, [...numDeep, isLastInDir ? false : true]);
+  }
+  else
+  {
+    addText(nextFile + '<br>');
+  }
+  treeRecurse(dir, dirStr, keyNum + 1, numDeep);
 }
 
 function whois(name)
@@ -680,6 +629,31 @@ function cd(arg)
     }
   }
   newLine();
+}
+
+// returns array [bool validDir? , newDir, newDirStr]
+function defaultChangeDirectorySafely(arg, command = 'cd')
+{
+  if(arg === undefined || arg === "")
+  {
+    return [true, currentDirectory, curDirStr];
+  }
+  else
+  {
+    let callCd = traverseDir(arg, currentDirectory, curDirStr);
+    switch(callCd)
+    {
+      case -1:
+        addText("<br>cd: " + arg + ": Not a directory");
+        break;
+      case 1:
+        addText("<br>cd: " + arg + ": No such file or directory");
+        break;
+      default:
+        return [true, callCd]
+    }
+    return [false];
+  }
 }
 
 function cat(arg)
@@ -923,9 +897,7 @@ function traverseDir(desiredDir, dir, dirStr)
           }
     else if(dirCheck === '..')
     {
-      dir = fileStructure;
-      dirStr = dirStr.substr(0, dirStr.lastIndexOf("/"));
-      dirStr.split("/").filter(e => e !== "").forEach(e => dir = dir[`${e}`]);
+      [dir, dirStr] = recedingDir(dir, dirStr);
       
       // no longer works after mkdir was added, allowing possibility of folders with names containing numeric literals
       // eval("dir = fileStructure" + dirStr.split("/").join("."));
@@ -947,5 +919,14 @@ function traverseDir(desiredDir, dir, dirStr)
       return 1;
     }
   }
+  return [dir, dirStr];
+}
+
+// returns dir preceding given dir
+function recedingDir(dir, dirStr)
+{
+  dir = fileStructure;
+  dirStr = dirStr.substr(0, dirStr.lastIndexOf("/"));
+  dirStr.split("/").filter(e => e !== "").forEach(e => dir = dir[`${e}`]);
   return [dir, dirStr];
 }

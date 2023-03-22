@@ -62,7 +62,9 @@ from buggy code)
 
 - figure out why calling tree multiple times makes the command slow! maybe bc its making so many variables?
 
-- tree does not print correct directory on top when specified and inserts dirs inbetween a 0 and 1
+- [FIXED] tree does not print correct directory on top when specified and inserts dirs inbetween a 0 and 1
+
+- after download command cannot input any other command
 
 */
 
@@ -274,7 +276,7 @@ function typeNextCommand(i = 0)
           typeNextCommand();
           break;
         case 11:
-          helpText.innerHTML = `<font style="font-size: 80%">those are the highlights! i'm giving you control now.
+          helpText.innerHTML = `<font style="font-size: 70%">those are the highlights! i'm giving you control now.
            here's an outline of my resume. feel free to click on any sections
           that look interesting for a closer look, or type 'download' to download
            my complete resume</font>`;
@@ -369,6 +371,7 @@ function normalInput()
               checkTab(dir, desiredDir, dirContent);
           }
         }
+        terminal.scrollTop = terminal.scrollHeight;
       }
       
       if(key === "ArrowUp")

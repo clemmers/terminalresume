@@ -165,7 +165,7 @@ var commandFinished = false;
 const helperText = ["whois chrisclem", "cat education", "cat employment", 
                     "cat skills", "cat contact", "cd projects/",
                     "cat anti-league-discordbot", "cat conways-game-of-life",
-                    "cat valorant-hack", "cat terminalresume"];
+                    "cat valorant-hack", "cat terminalresume", "tree .."];
 
 let terminalStuff = document.getElementById("not-welcome");
 let helpText = document.getElementById("help-text");
@@ -273,13 +273,16 @@ function typeNextCommand(i = 0)
           commandFinished = false;
           typeNextCommand();
           break;
-        case 10:
-          helpText.innerHTML = `those are the highlights! i'm giving you control of the terminal
-          now, feel free to explore. (type 'download' to download my resume)`;
+        case 11:
+          helpText.innerHTML = `<font style="font-size: 80%">those are the highlights! i'm giving you control now.
+           here's an outline of my resume. feel free to click on any sections
+          that look interesting for a closer look, or type 'download' to download
+           my complete resume</font>`;
           normalInput();
           document.getElementById("cursor").style.backgroundColor = cursor.style.borderColor;
           isClickedIn = true;
           break;
+          
       }
     }, 250);
   }
@@ -551,15 +554,18 @@ function tree(desiredDirStr)
   let test = defaultChangeDirectorySafely(desiredDirStr, 'tree');
   if(test[0])
   {
-    addText(`<br><font class="dirColor">${test[2] === curDirStr ? '.' : curDirStr.substring(curDirStr.lastIndexOf('/') + 1)}</font><br>`);
-    treeRecurse(test[1], test[2]);
+    addText(`<br><font class="dirColor">(tip, click on file name to see the 
+    contents!)<br>${test[2] === curDirStr ? '.' : test[2].substring(test[2].lastIndexOf('/') + 1)}</font><br>`);
+    console.log(test[1]);
+    console.log(test[2]);
+    treeRecurse(desiredDirStr, test[1], test[2]);
   }
   newLine();
 }
 
 // this is annoying and can prob be a lot more efficient
 // we love recursion !!!!!
-function treeRecurse(dir, dirStr, keyNum = 0, [...numDeep] = [])
+function treeRecurse(ogStr, dir, dirStr, keyNum = 0, [...numDeep] = [])
 {
   let arr = Object.keys(dir).sort().slice(keyNum);
   let nextFile = arr[0];
@@ -574,14 +580,17 @@ function treeRecurse(dir, dirStr, keyNum = 0, [...numDeep] = [])
   if(isFolder(nextFile, dir))
   {
     addText(`<font class='dirColor'>${nextFile}</font><br>`);
-    treeRecurse(dir[`${nextFile}`], dirStr + `/${nextFile}`, 0, [...numDeep, isLastInDir ? false : true]);
+    treeRecurse(ogStr, dir[`${nextFile}`], dirStr + `/${nextFile}`, 0, [...numDeep, isLastInDir ? false : true]);
   }
   else
   {
-    addText(nextFile + '<br>');
+    addText(`<button class="tree-button" onclick="
+    let dir = locateDirectory('${dirStr}', curDirStr); runCommand('cat ' + dir + '${nextFile}')">${nextFile}</button><br>`);
   }
-  treeRecurse(dir, dirStr, keyNum + 1, numDeep);
+  treeRecurse(ogStr, dir, dirStr, keyNum + 1, numDeep);
 }
+
+
 
 function whois(name)
 {
@@ -699,7 +708,7 @@ function defaultChangeDirectorySafely(arg, command = 'cd')
         addText("<br>cd: " + arg + ": No such file or directory");
         break;
       default:
-        return [true, callCd]
+        return [true, callCd[0], callCd[1]];
     }
     return [false];
   }
@@ -804,6 +813,7 @@ function projects()
 
 // uhh so apparently u can just start path with a / and go straight to the desired dir!!! whoops
 // so this function is bascialyl like useless but wtv its still cool
+// actually im using it now for clicking on file from tree so its useful!
 // ex. locateDirectory('/chrisclem/projects', '/chrisclem') returns 'projects/'
 function locateDirectory(desiredDir, currentWorkingDirectoryStr)
 {

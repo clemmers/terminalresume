@@ -13,3 +13,4 @@ current commands:
 - **resume** - prints resume to terminal
 - **projects** - prints list of github projects to terminal
 - **download** - downloads a copy of resume (last updated 03.05.23)
+- **tree** - prints out list of files (clicking them reveals their contents)

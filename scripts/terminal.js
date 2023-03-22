@@ -186,7 +186,7 @@ my resume. just press any key when youre ready`)
         moveHelpText();
         setTimeout(() => {
         showTerminal();
-        assignHelper();
+        assignHelper(needHelp);
         }, 1000);
     }, 2000);
 }
@@ -557,6 +557,8 @@ function tree(desiredDirStr)
   newLine();
 }
 
+// this is annoying and can prob be a lot more efficient
+// we love recursion !!!!!
 function treeRecurse(dir, dirStr, keyNum = 0, [...numDeep] = [])
 {
   let arr = Object.keys(dir).sort().slice(keyNum);

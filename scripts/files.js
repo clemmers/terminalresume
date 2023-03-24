@@ -62,7 +62,21 @@ request.onload = function () {
     //eval('Object.assign(fileStructure.chrisclem.projects, {"' + e.name.replace(/-/g, '_') + '" : "' + description + '"});');
     
   });
-  console.log(fileStructure);
+  finishedAPICall();
 };
 
 request.send();
+
+const whoisChris = `<br><font style="word-break: normal;">I'm a junior at Crescenta Valley High School, whos interested in everything computer
+          science related. I enjoy learning about how things work, and expanding my knowledge through hands-on
+          experimenting and tinkering. I'm able to effectively self-manage during independent projects and collaborate as part
+          of a productive team with experience in many different social media platforms and
+          office technology programs.</font>`;
+          
+          
+// run this to see how many documents are being accessed
+function download()
+{
+  let test = document?.getElementById("pdf");
+  console.log("print");
+}

@@ -267,15 +267,16 @@ function typeNextCommand(i = 0)
       commandFinished = true;
       enterPress(helperText[0]);
       helperText.splice(0, 1);
-      switch(helpCommandNum)
-      {
-        case 6:
+        if(helpCommandNum === 6)
+        
+        {
           helpText.innerHTML = `now we're going to check out some of the projects
           i've been working on`;
           commandFinished = false;
           typeNextCommand();
-          break;
-        case 11:
+        }
+        if(helpCommandNum > 10)
+        {
           helpText.innerHTML = `<font style="font-size: 70%">those are the highlights! i'm giving you control now.
            here's an outline of my resume. feel free to click on any sections
           that look interesting for a closer look, or type 'download' to download
@@ -283,9 +284,8 @@ function typeNextCommand(i = 0)
           normalInput();
           document.getElementById("cursor").style.backgroundColor = cursor.style.borderColor;
           isClickedIn = true;
-          break;
+        }
           
-      }
     }, 250);
   }
   else
@@ -465,14 +465,14 @@ function runCommand(command)
 
 function enterPress(enterInput)
 {
-  if(enterInput === "clear")
+  var command = enterInput.split(" ")[0];
+  if(command === "clear")
       {
         let lengthWithoutCursor = terminal.innerHTML.length - cursor.innerHTML.length - 43 - cursorPositionLeft;
         terminal.innerHTML = "<font class='userColor'>chrisclem</font>:<font class='dirColor'>~" + curDirStr + "</font> $ " + terminal.innerHTML.substring(lengthWithoutCursor);
       }
       else
       {
-        var command = enterInput.split(" ")[0];
         switch(command)
         {
         case '':
@@ -533,6 +533,10 @@ function enterPress(enterInput)
         case 'tree':
           tree(enterInput.split(" ")[1]);
           break;
+        
+        case 'fritos':
+          fritos(enterInput.split(" ")[1]);
+          break;
           
         default:
           addText("<br>Unknown Command: " + enterInput.split(" ")[0]);
@@ -550,6 +554,12 @@ function enterPress(enterInput)
       input = "";
       terminal.scrollTop = terminal.scrollHeight;
       tabNum = 0;
+}
+
+function fritos(type)
+{
+  addText('<br><a href="https://youtube.com/watch?v=OS6FIESBE1s" target="_blank"><img src="http://mobileimages.lowes.com/product/converted/028400/028400097604.jpg" alt="fritos original" width="40px" height"relative"></a>');
+  newLine();
 }
 
 function tree(desiredDirStr)
@@ -604,11 +614,7 @@ function whois(name)
   else
   {
   console.log(name);
-  addText(name === "chrisclem" ? `<br><font style="word-break: normal;">I'm a junior at Crescenta Valley High School, whos interested in everything computer
-          science related. I enjoy learning about how things work, and expanding my knowledge through hands-on
-          experimenting and tinkering. I'm able to effectively self-manage during independent projects and collaborate as part
-          of a productive team with experience in many different social media platforms and
-          office technology programs.</font>` : `<br>whois: \`${name}': unknown name.<br>
+  addText(name === "chrisclem" ? whoisChris : `<br>whois: \`${name}': unknown name.<br>
           Did you mean \`whois chrisclem'?`);
   }
   newLine();
@@ -655,6 +661,10 @@ function mkdir(directories)
 
 function download()
 {
+  //window.jsPDF = window.jspdf.jsPDF;
+  //var doc = new jsPDF();
+  
+  
     var link = document.createElement("a");
     link.setAttribute('download', 'resume_chris_clem.pdf');
     link.href = "resume_chris_clem.pdf";
@@ -662,6 +672,7 @@ function download()
     link.click();
     link.remove();
     newLine();
+  
 }
 
 function cd(arg)

@@ -663,8 +663,8 @@ function download()
 {
   //window.jsPDF = window.jspdf.jsPDF;
   //var doc = new jsPDF();
-  
-  
+  window.open("resume.html", "_blank");
+  /*
     var link = document.createElement("a");
     link.setAttribute('download', 'resume_chris_clem.pdf');
     link.href = "resume_chris_clem.pdf";
@@ -672,6 +672,7 @@ function download()
     link.click();
     link.remove();
     newLine();
+    */
   
 }
 

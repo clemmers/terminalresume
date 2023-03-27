@@ -2,12 +2,12 @@ const fileStructure =
 {
     chrisclem : 
     {
-      contact: '<font style="font-size: 6px"><br></font><b><a href="mailto: chrisclem244@yahoo.com"><font style="font-size: 12px; line-height: 0px">&#128231;</font> chrisclem244@yahoo.com</a><br>'
-                + '<font style="font-size: 6px"><br></font><font style="font-size: 12px; line-height: 0px">&#128222;</font> (818)497-1045<br><font style="font-size: 6px"><br></font>'
-                + '<a href="https://github.com/clemmers"><img src="github-mark-white.svg" alt="Github:" height="12px" width="relative"> clemmers</a></b><font style="font-size: 6px"><br></font>',
+      contact: '<font style="font-size: 6px"><br></font><b><a href="mailto: chrisclem244@yahoo.com"><font style="line-height: 0px">&#128231;</font> chrisclem244@yahoo.com</a><br>'
+                + '<font style="font-size: 6px"><br></font><font style="line-height: 0px">&#128222;</font> (818)497-1045<br><font style="font-size: 6px"><br></font>'
+                + '<a href="https://github.com/clemmers"><img src="github-mark-white.svg" alt="Github:" height="' + document.getElementById("terminal").style.fontSize + '" width="relative"> clemmers</a></b><font style="font-size: 6px"><br></font>',
       education: '<b class="dirColor"><a target="_blank" href="https://goo.gl/maps/C6VW1p2zdhyGBFXc8">Crescenta Valley High School</a> (August 2020 to Current)</b>'
                 + '<br>info about my academic achievements<br>interesting info',
-      employment: '<b>Mitch Clem Management<br><a target="_blank" href="https://goo.gl/maps/HQi3KsBrJepPHcN66"><font style="font-size: 12px; line-height: 0px">&#128205</font> Glendale, CA</a></b>'
+      employment: '<b>Mitch Clem Management<br><a target="_blank" href="https://goo.gl/maps/HQi3KsBrJepPHcN66"><font style="line-height: 0px">&#128205</font> Glendale, CA</a></b>'
                 + '<br>Social Media Presence Manager (March 2020 to Current)<br> Improved page content,'
                 + ' keyword releveancy, and branding to achieve search engine optimization goals<br>'
                 + ' Discussed site requirements with client to produce actionable development plans and budgets',

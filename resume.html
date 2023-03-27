@@ -41,14 +41,21 @@ a {
   bottom: 5px;
   width: 100%;
   background-color: black;
+  font-size: 2.2vw;
+  height: 370px;
+}
+
+img {
+  height: 2.2vw;
+  width: auto;
 }
 </style>
 <body>
     <h1 style="text-align: center;"><a href="https://chrisclem.dev/" target="_blank">view on webpage for an interactive terminal!</a></h1>
     <div id="terminal-wrap">
   <div style="font-size: 0;">
-<span id="terminal" style="font-size: 2.2vw; height: 370px;">
-        <div id="date" style="font-size: 2.2vw;"></div>
+<span id="terminal">
+        <div id="date"></div>
         </span>
           </div>
 </div>
@@ -80,13 +87,14 @@ a {
       doc.html(document.body, {
       callback: function(doc) {
         // Save the PDF
-        doc.save('sample-document.pdf');
+        doc.save('test-document.pdf');
       },
       x: 15,
       y: 15,
-      width: 170, //target width in the PDF document
-      windowWidth: 650 //window width in CSS pixels
+      //width: 170, //target width in the PDF document
+      //windowWidth: 650 //window width in CSS pixels
 });
+    window.close();
     }
     
 </script>

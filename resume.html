@@ -23,7 +23,7 @@ a {
   border-style: solid;
   border-width: 1px;
   border-color: white;
-  font-size: 2vw;
+  font-size: 12px;
 }
 
 #terminal-wrap {
@@ -41,12 +41,12 @@ a {
   bottom: 5px;
   width: 100%;
   background-color: black;
-  font-size: 2.2vw;
+  font-size: 12px;
   height: 370px;
 }
 
 img {
-  height: 2.2vw;
+  height: 12px;
   width: auto;
 }
 </style>
@@ -91,8 +91,8 @@ img {
         ${fileStructure["chrisclem"]["projects"]["valorant-hack"]}<br><b><font color="lime">chrisclem</font>:~/chrisclem/projects $</b> cat terminalresume <br>
         ${fileStructure["chrisclem"]["projects"]["terminalresume"]}<br><b><font color="lime">chrisclem</font>:~/chrisclem/projects $</b> <font id="cursor" style="background-color: white;">&nbsp;</font>`;
         
-        
-        html2pdf().from(document.body).save();
+        downloadPDF();
+
       
       /*
       window.jsPDF = window.jspdf.jsPDF;
@@ -108,7 +108,16 @@ img {
       //windowWidth: 650 //window width in CSS pixels
 });
 */
-    // window.close();
+    }
+    
+    
+    async function downloadPDF()
+    {
+      await html2pdf().set({
+      pagebreak: { mode: 'avoid-all' }
+      });
+      await html2pdf().from(document.body).save();
+      await window.close();
     }
     
 </script>

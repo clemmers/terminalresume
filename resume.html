@@ -50,6 +50,14 @@ img {
   width: auto;
 }
 </style>
+<!-- html2pdf CDN link -->
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+			integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+			crossorigin="anonymous"
+			referrerpolicy="no-referrer"
+		></script>
+</head>
 <body>
     <h1 style="text-align: center;"><a href="https://chrisclem.dev/" target="_blank">view on webpage for an interactive terminal!</a></h1>
     <div id="terminal-wrap">
@@ -59,8 +67,9 @@ img {
         </span>
           </div>
 </div>
-<!-- jsPDF library -->
+<!-- jsPDF library 
 <script src="js/jsPDF/dist/jspdf.umd.js"></script>
+-->
 <script src="./scripts/files.js"></script>
 <script>
 
@@ -82,6 +91,10 @@ img {
         ${fileStructure["chrisclem"]["projects"]["valorant-hack"]}<br><b><font color="lime">chrisclem</font>:~/chrisclem/projects $</b> cat terminalresume <br>
         ${fileStructure["chrisclem"]["projects"]["terminalresume"]}<br><b><font color="lime">chrisclem</font>:~/chrisclem/projects $</b> <font id="cursor" style="background-color: white;">&nbsp;</font>`;
         
+        
+        html2pdf().from(document.body).save();
+      
+      /*
       window.jsPDF = window.jspdf.jsPDF;
       var doc = new jsPDF();
       doc.html(document.body, {
@@ -94,6 +107,7 @@ img {
       //width: 170, //target width in the PDF document
       //windowWidth: 650 //window width in CSS pixels
 });
+*/
     window.close();
     }
     

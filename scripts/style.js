@@ -66,7 +66,11 @@ var buttons = document.getElementById("buttons");
 var title = document.getElementById("title");
 var subtitle = document.getElementById("subtitle");
 var subCursor = document.getElementById("subtitle-cursor");
-var downloadButton = document.getElementById("download-button");
+// var downloadButton = document.getElementById("download-button");
+
+var subtitleToWrite = document.getElementById("subtitle-to-write");
+var finalSub = "The following site contains my resume inside an interactive and navigable terminal simulation";
+subtitleToWrite.innerHTML = finalSub;
 
 // reveal title
 
@@ -74,6 +78,8 @@ var titleText = "Hi, my name's Chris!"
 var subtitleText = "The following site contains my resume inside an interactive and navigable temrinal si";
 var subtitleTextTwo = "rminal simulation";
 var numDeleted = 9;
+
+
 
 function revealText(i = 0)
 {
@@ -108,9 +114,12 @@ function revealSubtitle(i = 0)
         if(!animationFinished)
         {
             subtitle.innerHTML += subtitleText.charAt(i);
+            if(i < subtitleText.length - numDeleted) {
+            subtitleToWrite.innerHTML = subtitleToWrite.innerHTML.substring(1);
+            }
             revealSubtitle(i+1);
         }
-    }, Math.floor(Math.random() * 20 + 50));
+    }, Math.floor(Math.random() * 20 + 35));
 }
 
 function deleteMistake(i = 0)
@@ -127,7 +136,7 @@ function deleteMistake(i = 0)
             subtitle.innerHTML = subtitle.innerHTML.slice(0, -1);
             deleteMistake(i+1);
         }
-    }, Math.floor(Math.random() * 20 * i + 50));
+    }, Math.floor(Math.random() * 20 * i + 35));
 }
 
 function correctMistake(i = 0)
@@ -140,11 +149,12 @@ function correctMistake(i = 0)
             animationFinished = true;
             cursorBlink();
             buttons.style.transform = "translate(0, 0)";
+            /*
             downloadButton.style.opacity = "0";
             setTimeout(() => {
                 downloadButton.style.visibility = "visible";
                 downloadButton.style.opacity = "1";
-            }, 2000);
+            }, 2000); */
             return;
         }
     }
@@ -152,9 +162,10 @@ function correctMistake(i = 0)
         if(!animationFinished)
         {
             subtitle.innerHTML += subtitleTextTwo.charAt(i);
+            subtitleToWrite.innerHTML = subtitleToWrite.innerHTML.substring(1);
             correctMistake(i+1);
         }
-    }, Math.floor(Math.random() / i * 20 + 50));
+    }, Math.floor(Math.random() / i * 20 + 35));
 }
 
 function cursorBlink()
@@ -186,7 +197,7 @@ document.onkeydown = function skipAnimation()
         buttons.style.transform = "translate(0, 0)";
         buttons.offsetHeight;
         buttons.classList.remove('notransition');
-        downloadButton.style.visibility = "visible";
+        //downloadButton.style.visibility = "visible";
     }
 };
 

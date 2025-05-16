@@ -2,22 +2,22 @@ const fileStructure =
 {
     chrisclem : 
     {
-      contact: '<font style="font-size: 6px"><br></font><b><a href="mailto: chrisclem244@yahoo.com"><font style="line-height: 0px">&#128231;</font> chrisclem244@yahoo.com</a><br>'
-                + '<font style="font-size: 6px"><br></font><font style="line-height: 0px">&#128222;</font> (818)497-1045<br><font style="font-size: 6px"><br></font>'
-                + '<a href="https://github.com/clemmers"><img src="github-mark-white.svg" alt="Github:" height="' + document.getElementById("terminal").style.fontSize + '" width="relative"> clemmers</a></b><font style="font-size: 6px"><br></font>',
-      education: '<b class="dirColor"><a target="_blank" href="https://goo.gl/maps/C6VW1p2zdhyGBFXc8">Crescenta Valley High School</a> (August 2020 to Current)</b>'
-                + '<br>info about my academic achievements<br>interesting info',
-      employment: '<b>Mitch Clem Management<br><a target="_blank" href="https://goo.gl/maps/HQi3KsBrJepPHcN66"><font style="line-height: 0px">&#128205</font> Glendale, CA</a></b>'
-                + '<br>Social Media Presence Manager (March 2020 to Current)<br> Improved page content,'
-                + ' keyword releveancy, and branding to achieve search engine optimization goals<br>'
-                + ' Discussed site requirements with client to produce actionable development plans and budgets',
+      contact: '<font style="font-size: 6px"><br></font><b><a href="mailto: chris@chrisclem.dev"><font style="line-height: 0px">&#128231;</font> chris@chrisclem.dev</a><br>'
+              // add back later prolly its not exactly invisible + '<font style="font-size: 6px"><br></font><font style="line-height: 0px">&#128222;</font> (818)497-1045<br><font style="font-size: 6px"><br></font>'
+                + '<a href="https://github.com/clemmers"><img src="github-mark-white.svg" alt="Github:" height="' + document.getElementById("terminal").style.fontSize + '" width="relative"> clemmers</a><font style="font-size: 6px"><br></font>'
+                + '<a href="https://www.linkedin.com/in/chris-clem/"><img src="linkedin-logo.svg" alt="LinkedIn:" height="' + document.getElementById("terminal").style.fontSize + '" width="relative"> Chris Clem</a></b><font style="font-size: 6px"><br></font>',
+      education: '<b class="dirColor"><a target="_blank" href="https://pasadena.edu/">Pasadena City College</a> (August 2024 to Current)</b>'
+                + '<br>Computer Science Major',
+      employment: '<b>Computer Science Tutor<br><a target="_blank" href="https://goo.gl/maps/HQi3KsBrJepPHcN66"><font style="line-height: 0px">&#128205</font> Glendale, CA</a></b>'
+                + '<br>Sole Proprietor / Tutor (September 2024 to Current)<br>'
+                + 'I work closely with individuals to identify weak areas in their understanding of the computer science landscape, and address them through one-on-one tutoring.<br>',
       projects: 
       {
         // user projects
       },
       skills: '- Fast Learner<br>- Complex Problem Solving<br>- Advanced Analytical Thinking<br>'
-              + '- Teamwork<br>- Agile Development Methodology<br>- Unix Shell<br>'
-              + '- Code Analysis and Development<br>- Programing Languages: Java, JavaScript, Python'
+              + '- Teamwork<br>- Agile Development Methodology<br>'
+              + '- Code Analysis and Development<br>- Programing Languages I\'ve used: C++, Java, JavaScript, Python, Rust'
     },
     test :
     {
@@ -68,16 +68,17 @@ request.onload = function () {
 
 request.send();
 
-const whoisChris = `<br><font style="word-break: normal;">I'm a junior at Crescenta Valley High School, whos interested in everything computer
-          science related. I enjoy learning about how things work, and expanding my knowledge through hands-on
-          experimenting and tinkering. I'm able to effectively self-manage during independent projects and collaborate as part
-          of a productive team with experience in many different social media platforms and
-          office technology programs.</font>`;
+const whoisChris = `<br><font style="word-break: normal;">Hey, I'm Chris! 👋 I'm a student at Pasadena City College who's interested in everything Computer
+          Science related. I enjoy learning about how things work and expanding my knowledge through hands-on
+          experimenting and tinkering. You can check out some of my favorite projects through my <a href="https://www.linkedin.com/in/chris-clem/">LinkedIn</a>, or explore all of them on this website!</font>`;
           
-          
+
+/*
 // run this to see how many documents are being accessed
+
 function download()
 {
   let test = document?.getElementById("pdf");
   console.log("print");
 }
+  */

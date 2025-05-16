@@ -86,7 +86,7 @@ const commands = [
 ['cat [FILE]', 'concatenate files and print on the standard output'],
 ['cd [dir]', 'change the shell working directory'],
 ['clear', 'clear the terminal screen'],
-['download', 'downloads the latest uploaded version of resume (03.05.23)'],
+//['download', 'downloads the latest uploaded version of resume (03.05.23)'],
 ['help [command]', 'display information about builtin commands'],
 ['ls [FILE]', 'list directory contents'],
 ['mkdir [DIRECTORIES]', 'make directories'],
@@ -164,10 +164,14 @@ function resetActiveLine()
 
 var commandFinished = false;
 
+const highlightedProjects = ['terminalresume', 'image-secret-text-encoder-and-decoder', 'graphics.cpp', 'online-brainfuck-interpreter', 'oldinternet', 'anti-league-discordbot'].map(str => 'cat ' + str);
+
+
 const helperText = ["whois chrisclem", "cat education", "cat employment", 
-                    "cat skills", "cat contact", "cd projects/",
-                    "cat anti-league-discordbot", "cat conways-game-of-life",
-                    "cat valorant-hack", "cat terminalresume", "tree .."];
+                    "cat skills", "cat contact", "cd projects/"].concat(highlightedProjects, ["tree .."]);
+
+console.log("helper text");
+console.log(helperText);
 
 let terminalStuff = document.getElementById("not-welcome");
 let helpText = document.getElementById("help-text");
@@ -267,7 +271,7 @@ function typeNextCommand(i = 0)
       commandFinished = true;
       enterPress(helperText[0]);
       helperText.splice(0, 1);
-        if(helpCommandNum === 6)
+        if(helperText[0] === highlightedProjects[0])
         
         {
           helpText.innerHTML = `now we're going to check out some of the projects
@@ -275,11 +279,13 @@ function typeNextCommand(i = 0)
           commandFinished = false;
           typeNextCommand();
         }
-        if(helpCommandNum > 10)
+        if(helperText.length === 0)
         {
           helpText.innerHTML = `<font style="font-size: 70%">those are the highlights! i'm giving you control now.
            here's an outline of my resume. feel free to click on any sections
-          that look interesting for a closer look, or type 'download' to download
+          `
+          + `that look interesting for a closer look!</font>`;
+          `that look interesting for a closer look, or type 'download' to download
            my complete resume</font>`;
           normalInput();
           document.getElementById("cursor").style.backgroundColor = cursor.style.borderColor;
@@ -512,9 +518,9 @@ function enterPress(enterInput)
           projects();
           break;
           
-        case 'download':
-          download();
-          break;
+        //case 'download':
+        //  download();
+        //  break;
           
         case 'mkdir':
           mkdir(enterInput.split(" ").slice(1));
@@ -659,6 +665,7 @@ function mkdir(directories)
   newLine();
 }
 
+/*
 function download()
 {
   //window.jsPDF = window.jspdf.jsPDF;
@@ -676,9 +683,10 @@ function download()
     link.click();
     link.remove();
     newLine();
-   // */
+   // *  \/
   
 }
+*/
 
 function cd(arg)
 {
@@ -840,13 +848,7 @@ function locateDirectory(desiredDir, currentWorkingDirectoryStr)
   let dir;
   let desiredDirArr = desiredDir.split('/').filter(e => e !== "");
   let currDirArr = currentWorkingDirectoryStr.split('/').filter(e => e !== "");
-  // this is really smart good job dude
-  // thank you
-  // i just want someone to love me yk man
-  // i feel you broski but this is not really the time to get into this
-  // then when is the time? when can i express myself ever if not now? can you hear my singing? can you feel my every escaping breath?
-  // what the fuck are you talking about
-  // the government has been giving the homeless population supplements containing methamphetamine in order to supress their cries
+  // bro pls ignore that if u know what im talking about idk whats wrong with me
   let lastCommonIndex = -1;
   // sets lastCommonIndex as the level of the lowest shared directory
   // ex. if desiredDirArr = ['home', 'folder1', 'folder2', 'subfolder3'] and currDirArr = ['home', 'folder1', 'jerry', 'crayola']

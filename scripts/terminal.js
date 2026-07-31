@@ -180,8 +180,8 @@ let homeScreen = document.getElementById("home-screen");
 
 // should rename this so not to be confused wih showTerminal()
 // called by buttons on home
-function revealTerminal(needHelp = false, text = `bet, imma show you around
-my resume. just press any key when youre ready`)
+function revealTerminal(needHelp = false, text = `Awesome, I'll show you around
+my resume. Just press any key when youre ready`)
 {
     pressToSkipTransition(needHelp);
     homeScreen.style.display = "none";
@@ -258,7 +258,7 @@ function helpKeyPress()
   };
   cursor.style.backgroundColor = 'transparent';
   document.getElementById("cursor").style.backgroundColor = cursor.style.borderColor;
-  helpText.innerHTML = `let's learn a little bit about me (press any key to proceed throughout)`;
+  helpText.innerHTML = `Let's learn a little bit about me (press any key to proceed throughout)`;
   typeNextCommand();
 }
 
@@ -274,15 +274,15 @@ function typeNextCommand(i = 0)
         if(helperText[0] === highlightedProjects[0])
         
         {
-          helpText.innerHTML = `now we're going to check out some of the projects
+          helpText.innerHTML = `Now we're going to check out some of the projects
           i've been working on`;
           commandFinished = false;
           typeNextCommand();
         }
         if(helperText.length === 0)
         {
-          helpText.innerHTML = `<font style="font-size: 70%">those are the highlights! i'm giving you control now.
-           here's an outline of my resume. feel free to click on any sections
+          helpText.innerHTML = `<font style="font-size: 70%">Those are the highlights! I'm giving you control now.
+           Here's an outline of my resume. Feel free to click on any sections
           `
           + `that look interesting for a closer look!</font>`;
           `that look interesting for a closer look, or type 'download' to download
